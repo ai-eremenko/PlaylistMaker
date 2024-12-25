@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/blue"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text= "@string/title"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
+
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="80dp"
+        android:layout_weight="1"
+        android:backgroundTint="@color/white"
+        android:text="@string/search"
+        android:textColor="@color/black_for_settings"
+        android:textSize="22sp"
+        app:cornerRadius="16dp"
+
+        app:icon="@drawable/search"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp"
+        app:iconTint="@color/black_for_settings" />
+
+    <Button
+        android:id="@+id/media_library_button"
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:layout_weight="1"
+           android:backgroundTint="@color/white"
+           app:cornerRadius="16dp"
+           android:layout_marginTop="16dp"
+           android:text="@string/media_library"
+           android:textColor="@color/black_for_settings"
+           android:textSize="22sp"
+
+           app:icon="@drawable/media_library"
+           app:iconGravity="textStart"
+           app:iconPadding="8dp"
+           app:iconTint="@color/black_for_settings"/>
+
+       <Button
+           android:id="@+id/settings_button"
+           android:layout_width="match_parent"
+           android:layout_height="0dp"
+           android:layout_weight="1"
+           android:backgroundTint="@color/white"
+           app:cornerRadius="16dp"
+           android:layout_marginTop="16dp"
+           android:text="@string/settings"
+           android:textColor="@color/black_for_settings"
+           android:textSize="22sp"
+           android:layout_marginBottom="28dp"
+
+           app:icon="@drawable/settings"
+           app:iconGravity="textStart"
+           app:iconPadding="8dp"
+           app:iconTint="@color/black_for_settings"/>
+
+    </LinearLayout>
