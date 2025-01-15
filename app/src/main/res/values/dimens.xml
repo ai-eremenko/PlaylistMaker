@@ -6,4 +6,6 @@
     <dimen name="margin_top">24dp</dimen>
     <dimen name="margin_start">12dp</dimen>
     <dimen name="text_size_large">22sp</dimen>
-    <dimen name="text_size_medium">16sp</dimen></resources>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="corner_radius_size">16dp</dimen>
+</resources>
