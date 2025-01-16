@@ -55,19 +55,19 @@ class SearchActivity : AppCompatActivity() {
         }
 
         savedInstanceState?.let {
-            inputText = it.getString("search_text")
+            inputText = it.getString(Constants.SEARCH_TEXT_KEY)
             inputEditText.setText(inputText)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("search_text", inputText)
+        outState.putString(Constants.SEARCH_TEXT_KEY, inputText)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        inputText = savedInstanceState.getString("search_text")
+        inputText = savedInstanceState.getString(Constants.SEARCH_TEXT_KEY)
         inputEditText.setText(inputText)
     }
 }
