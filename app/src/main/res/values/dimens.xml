@@ -5,7 +5,9 @@
     <dimen name="padding_standard">16dp</dimen>
     <dimen name="margin_top">24dp</dimen>
     <dimen name="margin_start">12dp</dimen>
+    <dimen name="margin_start_second">8dp</dimen>
     <dimen name="text_size_large">22sp</dimen>
     <dimen name="text_size_medium">16sp</dimen>
-    <dimen name="corner_radius_size">16dp</dimen>
+    <dimen name="text_size_small">11sp</dimen>
+    <dimen name="corner_radius_size">11dp</dimen>
 </resources>

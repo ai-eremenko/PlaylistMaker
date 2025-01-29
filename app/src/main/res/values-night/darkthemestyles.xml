@@ -84,4 +84,12 @@
         <item name="android:textColorHint">@color/black_for_settings</item>
     </style>
 
+    <style name="ArrowTrackStyle">
+        <item name="tint">@color/white</item>
+    </style>
+
+    <style name="AuthorTextStyle">
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
 </resources>
