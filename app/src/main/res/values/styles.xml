@@ -89,6 +89,6 @@
     </style>
 
     <style name="AuthorTextStyle">
-        <item name="android:textColorHint">@color/text_color_hint</item>
+        <item name="android:textColor">@color/text_color_hint</item>
     </style>
 </resources>

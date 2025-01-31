@@ -16,24 +16,25 @@
 
         <ImageView
             android:id="@+id/back_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginTop="@dimen/padding_standard"
-            android:layout_marginBottom="@dimen/padding_standard"
-            android:layout_marginStart="@dimen/padding_standard"
-            android:src="@drawable/vector"
+            android:layout_width="@dimen/size_second"
+            android:layout_height="@dimen/size_second"
+            android:layout_marginTop="@dimen/margin_start_third"
+            android:layout_marginBottom="@dimen/margin_start_third"
+            android:layout_marginStart="@dimen/margin_start_third"
+            android:src="@drawable/back1"
             style="@style/BackArrowStyle" />
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="48dp"
             android:text="@string/search"
             style="@style/SettingHeaderStyle"
             android:textSize="@dimen/text_size_large"
+            android:paddingStart="12dp"
             android:fontFamily="@font/ys_display_medium"
             android:textFontWeight="500"
             android:gravity="start|center"
-            android:layout_marginStart="24dp" />
+            android:layout_marginStart="0dp" />
 
     </LinearLayout>
 
@@ -43,7 +44,7 @@
         android:layout_height="52dp"
         tools:context=".SearchActivity">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:layout_marginStart="@dimen/padding_standard"
@@ -54,41 +55,51 @@
             style="@style/EditTextBgStyle">
 
             <ImageView
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_marginTop="11dp"
-                android:layout_marginBottom="11dp"
-                android:layout_marginStart="13dp"
+                android:id="@+id/imageView"
+                style="@style/EditTextImageStyle"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="12dp"
                 android:src="@drawable/search2"
-                style="@style/EditTextImageStyle" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/inputEditText"
+                style="@style/EditTextHintStyle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="0dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8.5dp"
-                android:layout_marginBottom="8.5dp"
+                android:layout_marginEnd="40dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
                 android:hint="@string/search"
                 android:inputType="text"
-                android:background="@null"
                 android:maxLines="1"
                 android:textColor="@color/black_for_settings"
-                style="@style/EditTextHintStyle" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/clearIcon"
+                style="@style/EditTextImageStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:paddingVertical="12dp"
+                android:paddingHorizontal="14dp"
+                android:src="@drawable/cross"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/inputEditText"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/clearIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingEnd="30dp"
-            android:layout_gravity="end|center_vertical"
-            android:src="@drawable/cross"
-            android:visibility="gone"
-            app:tint="@color/grey" />
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView

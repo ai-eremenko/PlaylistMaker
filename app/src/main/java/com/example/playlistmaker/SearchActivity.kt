@@ -36,7 +36,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 inputText = s.toString()
-                clearIcon.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                clearIcon.visibility = if (s.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -44,7 +44,7 @@ class SearchActivity : AppCompatActivity() {
 
         clearIcon.setOnClickListener {
             inputEditText.text.clear()
-            clearIcon.visibility = View.GONE
+            clearIcon.visibility = View.INVISIBLE
             inputEditText.clearFocus()
 
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
