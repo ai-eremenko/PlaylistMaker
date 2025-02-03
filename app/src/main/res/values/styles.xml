@@ -83,4 +83,12 @@
     <style name="EditTextHintStyle">
         <item name="android:textColorHint">@color/text_color_hint</item>
     </style>
+
+    <style name="ArrowTrackStyle">
+        <item name="tint">@color/grey</item>
+    </style>
+
+    <style name="AuthorTextStyle">
+        <item name="android:textColor">@color/text_color_hint</item>
+    </style>
 </resources>

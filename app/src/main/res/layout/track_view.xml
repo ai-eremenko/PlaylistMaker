@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android = "http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_height"
+    style="@style/SettingBackgroundStyle">
+
+    <ImageView
+        android:id="@+id/sourceImage"
+        android:layout_width="@dimen/size3"
+        android:layout_height="@dimen/size3"
+        android:layout_marginStart="13dp"
+        android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_start_second"
+        android:layout_marginEnd="@dimen/margin_start_second"
+        app:layout_constraintBottom_toBottomOf="@+id/sourceImage"
+        app:layout_constraintEnd_toStartOf="@+id/arrow"
+        app:layout_constraintStart_toEndOf="@+id/sourceImage"
+        app:layout_constraintTop_toTopOf="@+id/sourceImage">
+
+        <TextView
+            android:id="@+id/trackName"
+            style="@style/DarkThemeButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/ys_display_regular"
+            android:maxLines="1"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/artistName"
+            style="@style/AuthorTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="@font/ys_display_regular"
+            android:maxLines="1"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trackName" />
+
+        <ImageView
+            android:id="@+id/dot"
+            style="@style/ArrowTrackStyle"
+            android:layout_width="@dimen/size4"
+            android:layout_height="@dimen/size4"
+            android:src="@drawable/dot"
+            app:layout_constraintBottom_toBottomOf="@+id/artistName"
+            app:layout_constraintStart_toEndOf="@+id/artistName"
+            app:layout_constraintTop_toTopOf="@+id/artistName" />
+
+        <TextView
+            android:id="@+id/trackTime"
+            style="@style/AuthorTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/ys_display_regular"
+            android:textSize="@dimen/text_size_small"
+            app:layout_constraintBottom_toBottomOf="@+id/dot"
+            app:layout_constraintStart_toEndOf="@+id/dot"
+            app:layout_constraintTop_toTopOf="@+id/dot" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="@dimen/size_first"
+        android:layout_height="@dimen/size_first"
+        android:layout_marginEnd="@dimen/margin_start"
+        android:src="@drawable/arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/ArrowTrackStyle" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
