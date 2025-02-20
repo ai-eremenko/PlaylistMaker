@@ -19,6 +19,7 @@
             android:exported="false" />
         <activity
             android:name=".SearchActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize"
             android:exported="false" />
         <activity
             android:name=".SettingsActivity"

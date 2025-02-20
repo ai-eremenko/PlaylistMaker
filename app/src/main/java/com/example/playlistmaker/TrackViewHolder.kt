@@ -5,10 +5,13 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.util.TimeUtils.formatDuration
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val trackNameView: TextView
@@ -26,8 +29,7 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bind(model: Track) {
         trackNameView.text = model.trackName
         artistNameView.text = model.artistName
-        trackTimeView.text = model.trackTime
-
+        trackTimeView.text = formatDuration(model.trackTimeMillis)
         Glide.with(itemView)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.placeholder)
@@ -36,6 +38,12 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .skipMemoryCache(true)
             .into(sourceImageView)
     }
+    }
+        private fun formatDuration (durationMillis: Long): String {
+            val dateFormat = SimpleDateFormat("mm:ss", Locale.getDefault())
+            return dateFormat.format(durationMillis)
+        }
+
 
     private fun Context.toPx(dp: Int): Int =
         TypedValue.applyDimension(
@@ -43,4 +51,4 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             dp.toFloat(),
             resources.displayMetrics
         ).toInt()
-}
+

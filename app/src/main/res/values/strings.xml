@@ -13,4 +13,7 @@
     <string name="support_email_subject"> Сообщение разработчикам и разработчицам приложения Playlist Maker </string>
     <string name="support_email_body"> Спасибо разработчикам и разработчицам за крутое приложение! </string>
     <string name="share_app_message"> https://practicum.yandex.ru/profile/android-developer/ </string>
+    <string name="no_internet_message"> Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету </string>
+    <string name="update"> Обновить </string>
+    <string name="no_result_message"> Ничего не нашлось </string>
 </resources>

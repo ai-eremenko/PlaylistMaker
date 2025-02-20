@@ -91,4 +91,18 @@
     <style name="AuthorTextStyle">
         <item name="android:textColor">@color/text_color_hint</item>
     </style>
+
+    <style name="NoInternetPicture">
+        <item name="android:src">@drawable/no_internet</item>
+    </style>
+
+    <style name="UpdateButton">
+        <item name="android:backgroundTint">@color/black_for_settings</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="NoResultsPicture">
+        <item name="android:src">@drawable/no_results</item>
+    </style>
+
 </resources>
