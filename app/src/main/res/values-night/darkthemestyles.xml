@@ -92,4 +92,17 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <style name="NoInternetPicture">
+        <item name="android:src">@drawable/no_internet_dark</item>
+    </style>
+
+    <style name="UpdateButton">
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:textColor">@color/black_for_settings</item>
+    </style>
+
+    <style name="NoResultsPicture">
+        <item name="android:src">@drawable/no_results_dark</item>
+    </style>
+
 </resources>
