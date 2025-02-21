@@ -64,6 +64,7 @@ class SearchActivity : AppCompatActivity() {
         clearIcon.setOnClickListener {
             inputEditText.text.clear()
             inputEditText.clearFocus()
+            trackList.visibility = RecyclerView.GONE
             clearIcon.visibility = View.INVISIBLE
 
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -85,11 +86,9 @@ class SearchActivity : AppCompatActivity() {
         noInternetLayout = findViewById(R.id.noInternetLayout)
         noResultsLayout= findViewById(R.id.noResultsLayout)
 
-        trackList.visibility = RecyclerView.GONE
-        noInternetLayout.visibility = View.GONE
-        noResultsLayout.visibility = View.GONE
-
-
+        trackList.isGone = true
+        noInternetLayout.isGone = true
+        noResultsLayout.isGone = true
 
         trackAdapter = TrackAdapter(emptyList())
         trackList.layoutManager = LinearLayoutManager(this)
@@ -129,25 +128,25 @@ class SearchActivity : AppCompatActivity() {
                     val searchResponse = response.body()
                     if (searchResponse != null && searchResponse.resultCount > 0) {
                         trackAdapter.setTracks(searchResponse.results)
-                        trackList.visibility = RecyclerView.VISIBLE
-                        noInternetLayout.visibility = TextView.GONE
-                        noResultsLayout.visibility = TextView.GONE
+                        trackList.isGone = false
+                        noInternetLayout.isGone = true
+                        noResultsLayout.isGone = true
                     } else {
-                        trackList.visibility = RecyclerView.GONE
-                        noResultsLayout.visibility = TextView.VISIBLE
-                        noInternetLayout.visibility = TextView.GONE
+                        trackList.isGone = true
+                        noResultsLayout.isGone = false
+                        noInternetLayout.isGone = true
                     }
                 } else {
-                    trackList.visibility = RecyclerView.GONE
-                    noResultsLayout.visibility = TextView.GONE
-                    noInternetLayout.visibility = TextView.VISIBLE
+                    trackList.isGone = true
+                    noResultsLayout.isGone = true
+                    noInternetLayout.isGone = false
                 }
             }
 
             override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                trackList.visibility = RecyclerView.GONE
-                noResultsLayout.visibility = TextView.GONE
-                noInternetLayout.visibility = TextView.VISIBLE
+                trackList.isGone = true
+                noResultsLayout.isGone = true
+                noInternetLayout.isGone = false
             }
         })
     }
