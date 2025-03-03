@@ -5,6 +5,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.util.TimeUtils.formatDuration
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -13,7 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class TrackViewHolder(itemView: View, private val onClick: (Track) -> Unit) : RecyclerView.ViewHolder(itemView) {
     private val trackNameView: TextView
     private val artistNameView: TextView
     private val trackTimeView: TextView
@@ -27,6 +28,9 @@ class TrackViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     fun bind(model: Track) {
+        itemView.setOnClickListener {
+            onClick(model)
+        }
         trackNameView.text = model.trackName
         artistNameView.text = model.artistName
         trackTimeView.text = formatDuration(model.trackTimeMillis)
