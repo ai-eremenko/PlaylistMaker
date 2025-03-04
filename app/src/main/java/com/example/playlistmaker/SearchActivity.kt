@@ -104,12 +104,11 @@ class SearchActivity : AppCompatActivity() {
         trackList.isGone = true
         noInternetLayout.isGone = true
         noResultsLayout.isGone = true
-        resultsHistoryLayout.isGone= false
 
 
-        trackAdapter = TrackAdapter(emptyList()) { track ->
-            onTrackClicked(track)
-        }
+
+        trackAdapter = TrackAdapter(emptyList(), { track ->
+            onTrackClicked(track)}, false)
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
 
@@ -142,12 +141,10 @@ class SearchActivity : AppCompatActivity() {
     private fun performSearch(query: String) {
         lastSearchQuery = query
 
-        trackAdapter = TrackAdapter(emptyList()) { track ->
-            onTrackClicked(track)
-        }
+        trackAdapter = TrackAdapter(emptyList(), { track ->
+            onTrackClicked(track)}, false)
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
-
         trackAdapter.updateTracks(emptyList())
         val itunesApiService = retrofit.create<ItunesApiService>()
         itunesApiService.search(query).enqueue(object : Callback<SearchResponse> {
@@ -203,12 +200,12 @@ class SearchActivity : AppCompatActivity() {
     private fun setupHistory() {
         val history = searchHistory.getHistory()
         if (history.isNotEmpty()) {
-            resultsHistoryLayout.visibility = View.VISIBLE
+            resultsHistoryLayout.isVisible = true
             historyRecyclerView.layoutManager = LinearLayoutManager(this)
-            trackAdapter = TrackAdapter(history) { track -> onTrackClicked(track) }
+            trackAdapter = TrackAdapter(history, { track -> onTrackClicked(track) }, true)
             historyRecyclerView.adapter = trackAdapter
         } else {
-            resultsHistoryLayout.visibility = View.GONE
+            resultsHistoryLayout.isVisible = false
         }
     }
 
@@ -217,6 +214,4 @@ class SearchActivity : AppCompatActivity() {
         trackAdapter.updateTracks(emptyList())
         resultsHistoryLayout.visibility = View.GONE
     }
-
-
 }

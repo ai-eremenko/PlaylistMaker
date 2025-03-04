@@ -34,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
 
             val sharedPreferences = getSharedPreferences("app_preferences", MODE_PRIVATE)
             with(sharedPreferences.edit()) {
-                putBoolean("dark_theme", checked)
+                putBoolean(Constants.DARK_THEME, checked)
                 apply()
         }
         }
