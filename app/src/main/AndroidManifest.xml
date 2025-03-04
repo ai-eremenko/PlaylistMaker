@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
+        android:name="com.example.playlistmaker.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,13 +18,16 @@
         <activity
             android:name=".MediaLibraryActivity"
             android:exported="false" />
+
         <activity
             android:name=".SearchActivity"
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:exported="false" />
+
         <activity
             android:name=".SettingsActivity"
-            android:exported="false" />
+            android:exported="false"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

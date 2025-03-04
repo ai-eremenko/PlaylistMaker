@@ -4,13 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -29,7 +26,18 @@ class SettingsActivity : AppCompatActivity() {
         val shareAppButton = findViewById<LinearLayout>(R.id.share_app_button)
         val writeToSupportButton = findViewById<LinearLayout>(R.id.write_to_support_button)
         val userAgreementButton = findViewById<LinearLayout>(R.id.user_agreement_button)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
 
+        themeSwitcher.isChecked = (applicationContext as App).darkTheme
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+
+            val sharedPreferences = getSharedPreferences("app_preferences", MODE_PRIVATE)
+            with(sharedPreferences.edit()) {
+                putBoolean(Constants.DARK_THEME, checked)
+                apply()
+        }
+        }
 
         shareAppButton.setOnClickListener {
             val shareIntent = Intent().apply {
