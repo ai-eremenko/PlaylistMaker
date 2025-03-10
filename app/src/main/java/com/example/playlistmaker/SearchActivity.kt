@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -108,7 +109,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         trackAdapter = TrackAdapter(emptyList(), { track ->
-            onTrackClicked(track)}, false)
+            onTrackClicked(track)})
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
 
@@ -142,7 +143,7 @@ class SearchActivity : AppCompatActivity() {
         lastSearchQuery = query
 
         trackAdapter = TrackAdapter(emptyList(), { track ->
-            onTrackClicked(track)}, false)
+            onTrackClicked(track)})
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
         trackAdapter.updateTracks(emptyList())
@@ -195,6 +196,18 @@ class SearchActivity : AppCompatActivity() {
     private fun onTrackClicked(track: Track) {
         searchHistory.addTrack(track)
         setupHistory()
+
+        val audioPlayerActivity = Intent(this, AudioPlayerActivity::class.java)
+        audioPlayerActivity.putExtra("trackName", track.trackName)
+        audioPlayerActivity.putExtra("artistName", track.artistName)
+        audioPlayerActivity.putExtra("trackDuration", track.trackTimeMillis)
+        audioPlayerActivity.putExtra("artworkUrl", track.artworkUrl100)
+        audioPlayerActivity.putExtra("collectionName", track.collectionName)
+        audioPlayerActivity.putExtra("releaseDate", track.releaseDate)
+        audioPlayerActivity.putExtra("primaryGenreName", track.primaryGenreName)
+        audioPlayerActivity.putExtra("country", track.country)
+
+        startActivity(audioPlayerActivity)
     }
 
     private fun setupHistory() {
@@ -202,7 +215,7 @@ class SearchActivity : AppCompatActivity() {
         if (history.isNotEmpty()) {
             resultsHistoryLayout.isVisible = true
             historyRecyclerView.layoutManager = LinearLayoutManager(this)
-            trackAdapter = TrackAdapter(history, { track -> onTrackClicked(track) }, true)
+            trackAdapter = TrackAdapter(history, { track -> onTrackClicked(track) })
             historyRecyclerView.adapter = trackAdapter
         } else {
             resultsHistoryLayout.isVisible = false
