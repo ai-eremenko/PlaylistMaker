@@ -78,6 +78,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 inputText = s.toString()
                 clearIcon.visibility = if (s.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+                updateUI()
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -100,6 +101,8 @@ class SearchActivity : AppCompatActivity() {
 
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+
+            updateUI()
         }
 
         trackList.isGone = true
@@ -119,7 +122,11 @@ class SearchActivity : AppCompatActivity() {
                 val imm =  getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
                 inputEditText.clearFocus()
-                performSearch(inputEditText.text.toString())
+                if (inputEditText.text.isNullOrEmpty()) {
+                    updateUI()
+                } else {
+                    performSearch(inputEditText.text.toString())
+                }
                 true
             } else {
                 false
@@ -131,6 +138,22 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    private fun updateUI() {
+        if (inputEditText.text.isNullOrEmpty()) {
+            trackList.isGone = true
+            noResultsLayout.isGone = true
+            noInternetLayout.isGone = true
+
+            if (searchHistory.getHistory().isNotEmpty()) {
+                resultsHistoryLayout.visibility = View.VISIBLE
+            } else {
+                resultsHistoryLayout.visibility = View.GONE
+            }
+        } else {
+            resultsHistoryLayout.visibility = View.GONE
+            trackList.isGone = false
+        }
+    }
 
     override fun onResume() {
         super.onResume()
