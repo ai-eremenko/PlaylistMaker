@@ -105,4 +105,18 @@
         <item name="android:src">@drawable/no_results_dark</item>
     </style>
 
+    <style name="RoundButton">
+        <item name="android:backgroundTint">@color/white2</item>
+    </style>
+
+    <style name="PlayButton">
+        <item name="android:backgroundTint">@color/black_for_settings</item>
+        <item name="android:src">@drawable/play_button_night</item>
+    </style>
+
+    <style name="PressedPlayButton">
+        <item name="android:backgroundTint">@color/black_for_settings</item>
+        <item name="android:src">@drawable/pressed_play_button_night</item>
+    </style>
+
 </resources>

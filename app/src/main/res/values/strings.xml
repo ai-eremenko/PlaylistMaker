@@ -18,5 +18,13 @@
     <string name="no_result_message"> Ничего не нашлось </string>
     <string name="results_history"> Вы искали </string>
     <string name="clear_history"> Очистить историю </string>
+    <string name="play_button_description"> Воспроизвести </string>
+    <string name="add_button_description"> Добавить </string>
+    <string name="favorite_button_description"> Избранное </string>
+    <string name="duration"> Длительность </string>
+    <string name="album"> Альбом </string>
+    <string name="year"> Год </string>
+    <string name="genre"> Жанр </string>
+    <string name="country"> Страна </string>
 
 </resources>

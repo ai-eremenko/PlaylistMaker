@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -77,6 +78,7 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 inputText = s.toString()
                 clearIcon.visibility = if (s.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
+                updateUI()
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -99,6 +101,8 @@ class SearchActivity : AppCompatActivity() {
 
             val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+
+            updateUI()
         }
 
         trackList.isGone = true
@@ -108,7 +112,7 @@ class SearchActivity : AppCompatActivity() {
 
 
         trackAdapter = TrackAdapter(emptyList(), { track ->
-            onTrackClicked(track)}, false)
+            onTrackClicked(track)})
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
 
@@ -118,7 +122,11 @@ class SearchActivity : AppCompatActivity() {
                 val imm =  getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(inputEditText.windowToken, 0)
                 inputEditText.clearFocus()
-                performSearch(inputEditText.text.toString())
+                if (inputEditText.text.isNullOrEmpty()) {
+                    updateUI()
+                } else {
+                    performSearch(inputEditText.text.toString())
+                }
                 true
             } else {
                 false
@@ -130,6 +138,22 @@ class SearchActivity : AppCompatActivity() {
 
     }
 
+    private fun updateUI() {
+        if (inputEditText.text.isNullOrEmpty()) {
+            trackList.isGone = true
+            noResultsLayout.isGone = true
+            noInternetLayout.isGone = true
+
+            if (searchHistory.getHistory().isNotEmpty()) {
+                resultsHistoryLayout.visibility = View.VISIBLE
+            } else {
+                resultsHistoryLayout.visibility = View.GONE
+            }
+        } else {
+            resultsHistoryLayout.visibility = View.GONE
+            trackList.isGone = false
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -142,7 +166,7 @@ class SearchActivity : AppCompatActivity() {
         lastSearchQuery = query
 
         trackAdapter = TrackAdapter(emptyList(), { track ->
-            onTrackClicked(track)}, false)
+            onTrackClicked(track)})
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
         trackAdapter.updateTracks(emptyList())
@@ -195,6 +219,18 @@ class SearchActivity : AppCompatActivity() {
     private fun onTrackClicked(track: Track) {
         searchHistory.addTrack(track)
         setupHistory()
+
+        val audioPlayerActivity = Intent(this, AudioPlayerActivity::class.java)
+        audioPlayerActivity.putExtra("trackName", track.trackName)
+        audioPlayerActivity.putExtra("artistName", track.artistName)
+        audioPlayerActivity.putExtra("trackDuration", track.trackTimeMillis)
+        audioPlayerActivity.putExtra("artworkUrl", track.artworkUrl100)
+        audioPlayerActivity.putExtra("collectionName", track.collectionName)
+        audioPlayerActivity.putExtra("releaseDate", track.releaseDate)
+        audioPlayerActivity.putExtra("primaryGenreName", track.primaryGenreName)
+        audioPlayerActivity.putExtra("country", track.country)
+
+        startActivity(audioPlayerActivity)
     }
 
     private fun setupHistory() {
@@ -202,7 +238,7 @@ class SearchActivity : AppCompatActivity() {
         if (history.isNotEmpty()) {
             resultsHistoryLayout.isVisible = true
             historyRecyclerView.layoutManager = LinearLayoutManager(this)
-            trackAdapter = TrackAdapter(history, { track -> onTrackClicked(track) }, true)
+            trackAdapter = TrackAdapter(history, { track -> onTrackClicked(track) })
             historyRecyclerView.adapter = trackAdapter
         } else {
             resultsHistoryLayout.isVisible = false

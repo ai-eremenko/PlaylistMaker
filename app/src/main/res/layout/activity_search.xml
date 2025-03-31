@@ -83,6 +83,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@color/black_for_settings"
+                android:textCursorDrawable="@drawable/color_cursor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView"
