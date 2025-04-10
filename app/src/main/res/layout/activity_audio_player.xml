@@ -106,14 +106,14 @@
                 android:layout_marginStart="@dimen/size_first"
                 android:layout_marginTop="@dimen/size7"
                 android:layout_marginEnd="@dimen/size8"
-                app:layout_constraintEnd_toStartOf="@+id/playButton"
+                app:layout_constraintEnd_toStartOf="@+id/time"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/artistName">
 
                 <ImageView
                     style="@style/RoundButton"
                     android:layout_width="@dimen/size6"
-                    android:layout_height="@dimen/size6"
+                    android:layout_height="match_parent"
                     android:background="@drawable/round_button"
                     android:src="@drawable/addbutton"
                     tools:layout_editor_absoluteX="46dp"
@@ -121,112 +121,128 @@
 
             </FrameLayout>
 
-
-            <FrameLayout
-                android:id="@+id/playButton"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/playButtonConstraintLayout"
                 android:layout_width="@dimen/size9"
                 android:layout_height="@dimen/size9"
-                android:layout_marginStart="@dimen/size10"
-                android:layout_marginTop="38dp"
-                android:layout_marginEnd="@dimen/size10"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="@dimen/size8"
+                android:layout_marginTop="@dimen/size12"
+                android:layout_marginEnd="@dimen/size8"
+                app:layout_constraintEnd_toStartOf="@+id/favoriteButtonConstraintLayout"
+                app:layout_constraintStart_toEndOf="@+id/addButton"
                 app:layout_constraintTop_toBottomOf="@+id/artistName">
 
-                <ImageView
-                    style="@style/PlayButton"
+                <FrameLayout
+                    android:id="@+id/playButton"
                     android:layout_width="@dimen/size9"
                     android:layout_height="@dimen/size9"
-                    android:background="@drawable/round_button" />
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="invisible">
 
-            </FrameLayout>
+                    <ImageView
+                        style="@style/PlayButton"
+                        android:layout_width="@dimen/size9"
+                        android:layout_height="@dimen/size9"
+                        android:background="@drawable/round_button" />
 
-            <FrameLayout
-                android:id="@+id/pressedPlayButton"
-                android:layout_width="@dimen/size9"
-                android:layout_height="@dimen/size9"
-                android:layout_marginStart="@dimen/size10"
-                android:layout_marginTop="38dp"
-                android:layout_marginEnd="@dimen/size10"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/artistName">
+                </FrameLayout>
 
-                <ImageView
-                    style="@style/PressedPlayButton"
+                <FrameLayout
+                    android:id="@+id/pauseButton"
                     android:layout_width="@dimen/size9"
                     android:layout_height="@dimen/size9"
-                    android:background="@drawable/round_button" />
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible">
 
-            </FrameLayout>
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        style="@style/PressedPlayButton"
+                        android:layout_width="@dimen/size9"
+                        android:layout_height="@dimen/size9"
+                        android:background="@drawable/round_button"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:layout_editor_absoluteX="0dp" />
 
+                </FrameLayout>
 
-            <FrameLayout
-                android:id="@+id/favoriteButton"
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/favoriteButtonConstraintLayout"
                 android:layout_width="@dimen/size6"
                 android:layout_height="@dimen/size6"
                 android:layout_marginStart="@dimen/size8"
                 android:layout_marginTop="@dimen/size7"
-                android:layout_marginEnd="@dimen/margin_top"
-                android:visibility="visible"
+                android:layout_marginEnd="@dimen/size_first"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/playButton"
+                app:layout_constraintStart_toEndOf="@+id/time"
                 app:layout_constraintTop_toBottomOf="@+id/artistName">
 
-                <ImageView
-                    style="@style/RoundButton"
+                <FrameLayout
+                    android:id="@+id/favoriteButton"
                     android:layout_width="@dimen/size6"
                     android:layout_height="@dimen/size6"
-                    android:background="@drawable/round_button"
-                    android:src="@drawable/favorite_button"
-                    tools:layout_editor_absoluteX="307dp"
-                    tools:layout_editor_absoluteY="451dp" />
+                    android:visibility="visible"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible">
 
-            </FrameLayout>
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        style="@style/RoundButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/round_button"
+                        android:src="@drawable/favorite_button"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </FrameLayout>
 
-            <FrameLayout
-                android:id="@+id/pressedFavoriteButton"
-                android:layout_width="@dimen/size6"
-                android:layout_height="@dimen/size6"
-                android:layout_marginStart="@dimen/size8"
-                android:layout_marginTop="@dimen/size7"
-                android:layout_marginEnd="@dimen/margin_top"
-                android:visibility="invisible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/playButton"
-                app:layout_constraintTop_toBottomOf="@+id/artistName">
-
-                <ImageView
-                    style="@style/RoundButton"
+                <FrameLayout
+                    android:id="@+id/pressedFavoriteButton"
                     android:layout_width="@dimen/size6"
                     android:layout_height="@dimen/size6"
-                    android:background="@drawable/round_button"
-                    android:src="@drawable/pressed_favorite_button"
-                    tools:layout_editor_absoluteX="307dp"
-                    tools:layout_editor_absoluteY="451dp" />
+                    android:visibility="visible"
+                    tools:visibility="visible">
 
-            </FrameLayout>
+                    <ImageView
+                        android:id="@+id/imageView4"
+                        style="@style/RoundButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/round_button"
+                        android:src="@drawable/pressed_favorite_button"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:visibility="gone" />
+
+                </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/time"
                 style="@style/SettingHeaderStyle"
-                android:layout_width="0dp"
-                android:layout_height="16dp"
+                android:layout_width="100dp"
+                android:layout_height="@dimen/padding_standard"
                 android:layout_marginStart="130dp"
-                android:layout_marginTop="@dimen/margin_start_third"
+                android:layout_marginTop="29dp"
                 android:layout_marginEnd="130dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="@dimen/size12"
                 android:fontFamily="@font/ys_display_medium"
                 android:gravity="center"
-                android:text="0:29"
+                android:text="00:00"
                 android:textFontWeight="500"
                 android:textSize="@dimen/text_size1"
                 app:layout_constraintBottom_toTopOf="@+id/trackTimeMillisConstraintLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/playButton" />
+                app:layout_constraintTop_toBottomOf="@+id/addButton" />
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -439,6 +455,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <FrameLayout
+                android:id="@+id/frameLayout"
                 android:layout_width="0dp"
                 android:layout_height="20dp"
                 app:layout_constraintEnd_toEndOf="parent"

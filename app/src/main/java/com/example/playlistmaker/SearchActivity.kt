@@ -3,6 +3,8 @@ package com.example.playlistmaker
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,17 +15,32 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.util.query
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.create
 
 class SearchActivity : AppCompatActivity() {
+
+    companion object {
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+    }
+
+    private var isClickAllowed = true
+    private val handler = Handler(Looper.getMainLooper())
+
+    private var currentQuery: String? = null
+    private val searchRunnable = Runnable {
+        currentQuery?.let { query -> performSearch(query) }
+    }
 
     private lateinit var inputEditText: EditText
     private var inputText: String? = null
@@ -40,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var noResultsLayout : ConstraintLayout
     private lateinit var noInternetLayout : ConstraintLayout
     private lateinit var resultsHistoryLayout : LinearLayout
+    private lateinit var progressBar: ProgressBar
 
     private lateinit var searchHistory: SearchHistory
     private lateinit var historyRecyclerView: RecyclerView
@@ -60,6 +78,7 @@ class SearchActivity : AppCompatActivity() {
         updateButton = findViewById(R.id.update_button)
         noInternetLayout = findViewById(R.id.noInternetLayout)
         noResultsLayout= findViewById(R.id.noResultsLayout)
+        progressBar=findViewById(R.id.progressBar)
 
         searchHistory = SearchHistory(getSharedPreferences("app_prefs", MODE_PRIVATE))
         setupHistory()
@@ -77,8 +96,10 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 inputText = s.toString()
+                currentQuery = inputText
                 clearIcon.visibility = if (s.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
                 updateUI()
+                searchDebounce()
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -108,6 +129,7 @@ class SearchActivity : AppCompatActivity() {
         trackList.isGone = true
         noInternetLayout.isGone = true
         noResultsLayout.isGone = true
+        progressBar.isGone = true
 
 
 
@@ -171,8 +193,20 @@ class SearchActivity : AppCompatActivity() {
         trackList.adapter = trackAdapter
         trackAdapter.updateTracks(emptyList())
         val itunesApiService = retrofit.create<ItunesApiService>()
+
+        trackList.isGone = true
+        noInternetLayout.isGone = true
+        noResultsLayout.isGone = true
+        progressBar.isGone = false
+
         itunesApiService.search(query).enqueue(object : Callback<SearchResponse> {
             override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
+
+                trackList.isGone = true
+                noInternetLayout.isGone = true
+                noResultsLayout.isGone = true
+                progressBar.isGone = true
+
                 if (response.isSuccessful) {
                     val searchResponse = response.body()
                     if (searchResponse != null && searchResponse.resultCount > 0) {
@@ -181,17 +215,20 @@ class SearchActivity : AppCompatActivity() {
                         noInternetLayout.isGone = true
                         noResultsLayout.isGone = true
                         resultsHistoryLayout.isGone= true
+                        progressBar.isGone = true
                     } else {
                         trackList.isGone = true
                         noResultsLayout.isGone = false
                         noInternetLayout.isGone = true
                         resultsHistoryLayout.isGone= true
+                        progressBar.isGone = true
                     }
                 } else {
                     trackList.isGone = true
                     noResultsLayout.isGone = true
                     noInternetLayout.isGone = false
                     resultsHistoryLayout.isGone= true
+                    progressBar.isGone = true
                 }
             }
 
@@ -199,7 +236,8 @@ class SearchActivity : AppCompatActivity() {
                 trackList.isGone = true
                 noResultsLayout.isGone = true
                 noInternetLayout.isGone = false
-                resultsHistoryLayout.isGone= true
+                resultsHistoryLayout.isGone = true
+                progressBar.isGone = true
             }
         })
     }
@@ -216,21 +254,33 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(inputText)
     }
 
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
     private fun onTrackClicked(track: Track) {
-        searchHistory.addTrack(track)
-        setupHistory()
+        if (clickDebounce()) {
+            searchHistory.addTrack(track)
+            setupHistory()
 
-        val audioPlayerActivity = Intent(this, AudioPlayerActivity::class.java)
-        audioPlayerActivity.putExtra("trackName", track.trackName)
-        audioPlayerActivity.putExtra("artistName", track.artistName)
-        audioPlayerActivity.putExtra("trackDuration", track.trackTimeMillis)
-        audioPlayerActivity.putExtra("artworkUrl", track.artworkUrl100)
-        audioPlayerActivity.putExtra("collectionName", track.collectionName)
-        audioPlayerActivity.putExtra("releaseDate", track.releaseDate)
-        audioPlayerActivity.putExtra("primaryGenreName", track.primaryGenreName)
-        audioPlayerActivity.putExtra("country", track.country)
+            val audioPlayerActivity = Intent(this, AudioPlayerActivity::class.java)
+            audioPlayerActivity.putExtra("trackName", track.trackName)
+            audioPlayerActivity.putExtra("artistName", track.artistName)
+            audioPlayerActivity.putExtra("trackDuration", track.trackTimeMillis)
+            audioPlayerActivity.putExtra("artworkUrl", track.artworkUrl100)
+            audioPlayerActivity.putExtra("collectionName", track.collectionName)
+            audioPlayerActivity.putExtra("releaseDate", track.releaseDate)
+            audioPlayerActivity.putExtra("primaryGenreName", track.primaryGenreName)
+            audioPlayerActivity.putExtra("country", track.country)
+            audioPlayerActivity.putExtra("previewUrl", track.previewUrl)
 
-        startActivity(audioPlayerActivity)
+            startActivity(audioPlayerActivity)
+        }
     }
 
     private fun setupHistory() {
@@ -249,5 +299,10 @@ class SearchActivity : AppCompatActivity() {
         searchHistory.clearHistory()
         trackAdapter.updateTracks(emptyList())
         resultsHistoryLayout.visibility = View.GONE
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
     }
 }
