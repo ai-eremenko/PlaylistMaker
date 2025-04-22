@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.presentation.search_track
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -7,7 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -16,16 +15,23 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.util.query
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.create
+import com.example.playlistmaker.Creator
+import com.example.playlistmaker.presentation.audio_player.AudioPlayerActivity
+import com.example.playlistmaker.app.Constants
+import com.example.playlistmaker.R
+import com.example.playlistmaker.data.local.SearchHistoryStorageImpl
+import com.example.playlistmaker.data.network.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.domain.api.SearchHistoryInteractor
+import com.example.playlistmaker.domain.api.SearchHistoryRepository
+import com.example.playlistmaker.domain.api.TracksInteractor
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.presentation.extensions.isGone
+import com.example.playlistmaker.presentation.extensions.isVisible
+import com.google.gson.Gson
 
 class SearchActivity : AppCompatActivity() {
 
@@ -59,9 +65,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var resultsHistoryLayout : LinearLayout
     private lateinit var progressBar: ProgressBar
 
-    private lateinit var searchHistory: SearchHistory
     private lateinit var historyRecyclerView: RecyclerView
 
+    private lateinit var tracksInteractor: TracksInteractor
+    private lateinit var searchHistoryInteractor: SearchHistoryInteractor
 
     @SuppressLint("CutPasteId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,7 +87,9 @@ class SearchActivity : AppCompatActivity() {
         noResultsLayout= findViewById(R.id.noResultsLayout)
         progressBar=findViewById(R.id.progressBar)
 
-        searchHistory = SearchHistory(getSharedPreferences("app_prefs", MODE_PRIVATE))
+        tracksInteractor = Creator.provideTracksInteractor()
+        searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
+
         setupHistory()
 
         backButton.setOnClickListener {
@@ -133,8 +142,7 @@ class SearchActivity : AppCompatActivity() {
 
 
 
-        trackAdapter = TrackAdapter(emptyList(), { track ->
-            onTrackClicked(track)})
+        trackAdapter = TrackAdapter(emptyList(), ::onTrackClicked)
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
 
@@ -166,7 +174,7 @@ class SearchActivity : AppCompatActivity() {
             noResultsLayout.isGone = true
             noInternetLayout.isGone = true
 
-            if (searchHistory.getHistory().isNotEmpty()) {
+            if (searchHistoryInteractor.getHistory().isNotEmpty()) {
                 resultsHistoryLayout.visibility = View.VISIBLE
             } else {
                 resultsHistoryLayout.visibility = View.GONE
@@ -187,57 +195,50 @@ class SearchActivity : AppCompatActivity() {
     private fun performSearch(query: String) {
         lastSearchQuery = query
 
-        trackAdapter = TrackAdapter(emptyList(), { track ->
-            onTrackClicked(track)})
+        trackAdapter.updateTracks(emptyList())
         trackList.layoutManager = LinearLayoutManager(this)
         trackList.adapter = trackAdapter
         trackAdapter.updateTracks(emptyList())
-        val itunesApiService = retrofit.create<ItunesApiService>()
 
         trackList.isGone = true
         noInternetLayout.isGone = true
         noResultsLayout.isGone = true
+        resultsHistoryLayout.isGone = true
         progressBar.isGone = false
 
-        itunesApiService.search(query).enqueue(object : Callback<SearchResponse> {
-            override fun onResponse(call: Call<SearchResponse>, response: Response<SearchResponse>) {
 
-                trackList.isGone = true
-                noInternetLayout.isGone = true
-                noResultsLayout.isGone = true
-                progressBar.isGone = true
+        tracksInteractor.searchTracks(query, object : TracksInteractor.TracksConsumer {
+            override fun consume(foundTracks: List<Track>) {
 
-                if (response.isSuccessful) {
-                    val searchResponse = response.body()
-                    if (searchResponse != null && searchResponse.resultCount > 0) {
-                        trackAdapter.updateTracks(searchResponse.results)
+            runOnUiThread {
+                    progressBar.isGone = true
+
+                when {
+                    foundTracks.isNotEmpty() -> {
+                        trackAdapter.updateTracks(foundTracks)
                         trackList.isGone = false
                         noInternetLayout.isGone = true
                         noResultsLayout.isGone = true
-                        resultsHistoryLayout.isGone= true
-                        progressBar.isGone = true
-                    } else {
-                        trackList.isGone = true
-                        noResultsLayout.isGone = false
-                        noInternetLayout.isGone = true
-                        resultsHistoryLayout.isGone= true
-                        progressBar.isGone = true
+                        resultsHistoryLayout.isGone = true
                     }
-                } else {
+                    foundTracks.isEmpty() -> {
+                        trackList.isGone = true
+                        noInternetLayout.isGone = true
+                        noResultsLayout.isGone = false
+                        resultsHistoryLayout.isGone = true
+                    }
+                }
+            }
+            }
+
+            override fun onError(error: Throwable) {
+                runOnUiThread {
+                    progressBar.isGone = true
                     trackList.isGone = true
                     noResultsLayout.isGone = true
                     noInternetLayout.isGone = false
-                    resultsHistoryLayout.isGone= true
-                    progressBar.isGone = true
+                    resultsHistoryLayout.isGone = true
                 }
-            }
-
-            override fun onFailure(call: Call<SearchResponse>, t: Throwable) {
-                trackList.isGone = true
-                noResultsLayout.isGone = true
-                noInternetLayout.isGone = false
-                resultsHistoryLayout.isGone = true
-                progressBar.isGone = true
             }
         })
     }
@@ -265,7 +266,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun onTrackClicked(track: Track) {
         if (clickDebounce()) {
-            searchHistory.addTrack(track)
+            searchHistoryInteractor.addTrack(track)
             setupHistory()
 
             val audioPlayerActivity = Intent(this, AudioPlayerActivity::class.java)
@@ -284,11 +285,11 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun setupHistory() {
-        val history = searchHistory.getHistory()
+        val history = searchHistoryInteractor.getHistory()
         if (history.isNotEmpty()) {
             resultsHistoryLayout.isVisible = true
             historyRecyclerView.layoutManager = LinearLayoutManager(this)
-            trackAdapter = TrackAdapter(history, { track -> onTrackClicked(track) })
+            trackAdapter = TrackAdapter(history, ::onTrackClicked)
             historyRecyclerView.adapter = trackAdapter
         } else {
             resultsHistoryLayout.isVisible = false
@@ -296,7 +297,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun clearHistory() {
-        searchHistory.clearHistory()
+        searchHistoryInteractor.clearHistory()
         trackAdapter.updateTracks(emptyList())
         resultsHistoryLayout.visibility = View.GONE
     }

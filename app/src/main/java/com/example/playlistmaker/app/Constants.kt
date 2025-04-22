@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.app
 
 object Constants {
     const val SEARCH_TEXT_KEY = "search_text"
