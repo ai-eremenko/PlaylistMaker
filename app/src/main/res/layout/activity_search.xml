@@ -44,7 +44,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        tools:context=".presentation.search_track.SearchActivity">
+        tools:context=".ui.search.activity.SearchActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -63,6 +63,7 @@
                 android:layout_height="16dp"
                 android:layout_marginStart="12dp"
                 android:src="@drawable/search2"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -84,6 +85,7 @@
                 android:singleLine="true"
                 android:textColor="@color/black_for_settings"
                 android:textCursorDrawable="@drawable/color_cursor"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView"

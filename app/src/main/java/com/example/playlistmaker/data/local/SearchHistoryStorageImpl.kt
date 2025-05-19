@@ -13,9 +13,13 @@ class SearchHistoryStorageImpl(
     private val historyKey = "search_history"
 
     override fun getHistory(): List<Track> {
-        val json = sharedPreferences.getString(historyKey, null) ?: return emptyList()
-        val type = object : TypeToken<List<Track>>() {}.type
-        return gson.fromJson(json, type)
+        return try {
+            val json = sharedPreferences.getString(historyKey, null) ?: return emptyList()
+            val type = object : TypeToken<List<Track>>() {}.type
+            gson.fromJson(json, type)
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     override fun clearHistory() {
