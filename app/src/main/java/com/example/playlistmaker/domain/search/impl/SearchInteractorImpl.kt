@@ -1,13 +1,15 @@
 package com.example.playlistmaker.domain.search.impl
 
 import com.example.playlistmaker.app.Resource
+import com.example.playlistmaker.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.search.SearchInteractor
 import com.example.playlistmaker.domain.search.SearchRepository
 import java.util.concurrent.Executors
 
 class SearchInteractorImpl(
-    private val repository: SearchRepository
+    private val repository: SearchRepository,
+    private val historyInteractor: SearchHistoryInteractor
 ) : SearchInteractor {
 
     private val executor = Executors.newCachedThreadPool()
@@ -26,14 +28,14 @@ class SearchInteractorImpl(
     }
 
     override fun addTrackToHistory(track: Track) {
-        repository.addTrackToHistory(track)
+        historyInteractor.addTrack(track)
     }
 
     override fun clearSearchHistory() {
-        repository.clearSearchHistory()
+        historyInteractor.clearHistory()
     }
 
     override fun getSearchHistory(): List<Track> {
-        return repository.getSearchHistory()
+        return  historyInteractor.getHistory()
     }
 }

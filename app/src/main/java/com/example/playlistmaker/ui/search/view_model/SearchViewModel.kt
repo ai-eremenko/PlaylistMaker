@@ -64,7 +64,8 @@ class SearchViewModel(
                         showToast(errorMessage)
                     }
                     foundTracks.isNullOrEmpty() -> {
-                        renderState(SearchScreenState.Empty(getApplication<Application>().getString(R.string.no_result_message)))
+                        renderState(SearchScreenState.Empty(getApplication<Application>().getString(
+                            R.string.no_result_message)))
                     }
                     else -> {
                         renderState(SearchScreenState.Content(foundTracks))

@@ -3,6 +3,7 @@ package com.example.playlistmaker.data.sharing.impl
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.sharing.ExternalNavigator
 import com.example.playlistmaker.domain.sharing.model.EmailData
 
@@ -16,7 +17,7 @@ class ExternalNavigatorImpl (
             putExtra(Intent.EXTRA_TEXT, link)
             type = "text/plain"
         }
-        context.startActivity(Intent.createChooser(intent, "Поделиться приложением через"))
+        context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_app_via)))
     }
 
     override fun openLink(url: String) {

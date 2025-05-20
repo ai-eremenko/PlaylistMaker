@@ -96,7 +96,10 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 inputText = s?.toString()
                 binding.clearIcon.visibility = if (s.isNullOrEmpty()) View.INVISIBLE else View.VISIBLE
-                viewModel.searchDebounce(s?.toString() ?: "")
+
+                if (s.isNullOrEmpty()) {
+                    viewModel.loadSearchHistory()}
+                    viewModel.searchDebounce(s.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {}

@@ -63,7 +63,7 @@
                 android:layout_height="16dp"
                 android:layout_marginStart="12dp"
                 android:src="@drawable/search2"
-                android:visibility="invisible"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

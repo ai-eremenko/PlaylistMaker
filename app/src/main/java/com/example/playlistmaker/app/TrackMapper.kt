@@ -5,7 +5,7 @@ import com.example.playlistmaker.domain.models.Track
 
 
 class TrackMapper {
-    fun toTrack(dto: TrackDto): Track {
+    fun map(dto: TrackDto): Track {
         return Track(
             trackId = dto.trackId.toString(),
             trackName = dto.trackName,

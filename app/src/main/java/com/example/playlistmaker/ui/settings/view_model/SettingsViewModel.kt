@@ -5,10 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.playlistmaker.R
 import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.settings.SettingsInteractor
 import com.example.playlistmaker.domain.settings.model.ThemeSettings
 import com.example.playlistmaker.domain.sharing.SharingInteractor
+import com.example.playlistmaker.domain.sharing.model.EmailData
 
 class SettingsViewModel(
     private val sharingInteractor: SharingInteractor,
@@ -28,16 +30,16 @@ class SettingsViewModel(
         _themeLiveData.value = newSettings
     }
 
-    fun shareApp() {
-        sharingInteractor.shareApp()
+    fun shareApp(shareMessage: String) {
+        sharingInteractor.shareApp(shareMessage)
     }
 
-    fun openTerms() {
-        sharingInteractor.openTerms()
+    fun openTerms(termsUrl: String) {
+        sharingInteractor.openTerms(termsUrl)
     }
 
-    fun openSupport() {
-        sharingInteractor.openSupport()
+    fun openSupport(emailData: EmailData) {
+        sharingInteractor.openSupport(emailData)
     }
 
     companion object {

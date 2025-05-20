@@ -37,14 +37,14 @@ object Creator {
 
     fun provideSearchInteractor(context: Context): SearchInteractor {
         return SearchInteractorImpl(
-            repository = getSearchRepository(context)
+            repository = getSearchRepository(),
+            historyInteractor = provideSearchHistoryInteractor(context)
         )
     }
 
-    private fun getSearchRepository(context: Context): SearchRepository {
+    private fun getSearchRepository(): SearchRepository {
         return SearchRepositoryImpl(
             networkClient = RetrofitNetworkClient(),
-            historyInteractor = provideSearchHistoryInteractor(context),
             trackMapper = getTrackMapper()
         )
     }
@@ -91,8 +91,7 @@ object Creator {
 
     fun provideSharingInteractor(context: Context): SharingInteractor {
         return SharingInteractorImpl(
-            provideExternalNavigator(context),
-            context.resources
+            externalNavigator = provideExternalNavigator(context)
         )
     }
 

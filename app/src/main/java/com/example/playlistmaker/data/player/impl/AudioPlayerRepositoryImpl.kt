@@ -11,7 +11,6 @@ class AudioPlayerRepositoryImpl : AudioPlayerRepository {
 
     override fun preparePlayer(url: String) {
         releasePlayer()
-        println("DEBUG SAGUR $url")
         mediaPlayer.setDataSource(url)
         mediaPlayer.setOnPreparedListener {
             prepared = true
