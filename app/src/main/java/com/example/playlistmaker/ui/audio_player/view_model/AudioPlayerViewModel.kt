@@ -10,8 +10,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.os.Handler
-import androidx.lifecycle.ViewModelProvider
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.AudioPlayerInteractor
 
@@ -20,7 +18,8 @@ class AudioPlayerViewModel(
     private val audioPlayerInteractor: AudioPlayerInteractor
 ) : ViewModel() {
 
-    private val _audioPlayerScreenState = MutableLiveData<AudioPlayerScreenState>(AudioPlayerScreenState.Default)
+    private val _audioPlayerScreenState =
+        MutableLiveData<AudioPlayerScreenState>(AudioPlayerScreenState.Default)
     val audioPlayerScreenState: LiveData<AudioPlayerScreenState> = _audioPlayerScreenState
 
     private val _trackData = MutableLiveData<Track>()
@@ -46,7 +45,7 @@ class AudioPlayerViewModel(
     }
 
     fun playbackControl() {
-        when(_audioPlayerScreenState.value) {
+        when (_audioPlayerScreenState.value) {
             is AudioPlayerScreenState.Playing -> pausePlayer()
             is AudioPlayerScreenState.Prepared, is AudioPlayerScreenState.Paused -> startPlayer()
             else -> {}
@@ -54,40 +53,40 @@ class AudioPlayerViewModel(
     }
 
     private fun startPlayer() {
-            if (audioPlayerInteractor.isPrepared()) {
-               audioPlayerInteractor.startPlayer()
-                _audioPlayerScreenState.postValue(AudioPlayerScreenState.Playing(formatTime(0)))
-                startUpdatingTime()
-            }
+        if (audioPlayerInteractor.isPrepared()) {
+            audioPlayerInteractor.startPlayer()
+            _audioPlayerScreenState.postValue(AudioPlayerScreenState.Playing(formatTime(0)))
+            startUpdatingTime()
         }
+    }
 
     fun pausePlayer() {
-            if (audioPlayerInteractor.isPlaying()) {
-                currentPosition = audioPlayerInteractor.getCurrentPosition()
-        audioPlayerInteractor.pausePlayer()
-        _audioPlayerScreenState.postValue(AudioPlayerScreenState.Paused)
-        stopUpdatingTime()
-    }
-}
-
-private fun startUpdatingTime() {
-    stopUpdatingTime()
-
-    if (mainThreadHandler == null) {
-        mainThreadHandler = Handler(Looper.getMainLooper())
-    }
-    updateRunnable = object : Runnable {
-        override fun run() {
-            if (audioPlayerInteractor.isPlaying()) {
-                _audioPlayerScreenState.postValue(
-                    AudioPlayerScreenState.Playing(formatTime(audioPlayerInteractor.getCurrentPosition()))
-                )
-                            mainThreadHandler?.postDelayed(this, 300)
-            }
+        if (audioPlayerInteractor.isPlaying()) {
+            currentPosition = audioPlayerInteractor.getCurrentPosition()
+            audioPlayerInteractor.pausePlayer()
+            _audioPlayerScreenState.postValue(AudioPlayerScreenState.Paused)
+            stopUpdatingTime()
         }
     }
-    updateRunnable?.let { mainThreadHandler?.post(it) }
-}
+
+    private fun startUpdatingTime() {
+        stopUpdatingTime()
+
+        if (mainThreadHandler == null) {
+            mainThreadHandler = Handler(Looper.getMainLooper())
+        }
+        updateRunnable = object : Runnable {
+            override fun run() {
+                if (audioPlayerInteractor.isPlaying()) {
+                    _audioPlayerScreenState.postValue(
+                        AudioPlayerScreenState.Playing(formatTime(audioPlayerInteractor.getCurrentPosition()))
+                    )
+                    mainThreadHandler?.postDelayed(this, 300)
+                }
+            }
+        }
+        updateRunnable?.let { mainThreadHandler?.post(it) }
+    }
 
     private fun stopUpdatingTime() {
         updateRunnable?.let { mainThreadHandler?.removeCallbacks(it) }
@@ -102,18 +101,6 @@ private fun startUpdatingTime() {
         audioPlayerInteractor.releasePlayer()
         stopUpdatingTime()
     }
-
-    companion object {
-        fun getViewModelFactory(provideAudioPlayerInteractor: Application): ViewModelProvider.Factory {
-            return object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return AudioPlayerViewModel(
-                        Creator.provideAudioPlayerInteractor()
-                    ) as T
-                }
-            }
-        }
-    }
-
 }
+
+

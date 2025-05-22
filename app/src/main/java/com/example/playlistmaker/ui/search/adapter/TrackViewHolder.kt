@@ -21,7 +21,7 @@ class TrackViewHolder(
         }
         binding.trackName.text = model.trackName
         binding.artistName.text = model.artistName
-        binding.trackTime.text = model.trackTimeMillis
+        binding.trackTime.text = model.trackTime
         Glide.with( binding.root)
             .load(model.artworkUrl100)
             .placeholder(R.drawable.placeholder)

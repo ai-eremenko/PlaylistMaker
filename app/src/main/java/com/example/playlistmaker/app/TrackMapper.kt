@@ -10,7 +10,7 @@ class TrackMapper {
             trackId = dto.trackId.toString(),
             trackName = dto.trackName,
             artistName = dto.artistName,
-            trackTimeMillis = getFormattedDuration(dto.trackTimeMillis),
+            trackTime = getFormattedDuration(dto.trackTimeMillis),
             artworkUrl100 = dto.artworkUrl100,
             collectionName = dto.collectionName,
             releaseDate = dto.releaseDate,
@@ -20,7 +20,7 @@ class TrackMapper {
         )
     }
 
-    fun getFormattedDuration(millis: Long): String {
+    private fun getFormattedDuration(millis: Long): String {
         val dateFormat = java.text.SimpleDateFormat("mm:ss", java.util.Locale.getDefault())
         return dateFormat.format(millis)
     }

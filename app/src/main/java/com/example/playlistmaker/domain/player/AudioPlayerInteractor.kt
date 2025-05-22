@@ -1,6 +1,8 @@
 package com.example.playlistmaker.domain.player
 
-class AudioPlayerInteractor(private val repository: AudioPlayerRepository) {
+class AudioPlayerInteractor(
+    private val repository: AudioPlayerRepository
+) {
 
     fun preparePlayer(url: String) = repository.preparePlayer(url)
     fun startPlayer() = repository.startPlayer()
