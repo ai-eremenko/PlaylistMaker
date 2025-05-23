@@ -21,9 +21,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupViews() {
-        binding.searchButton.setOnClickListener { viewModel.searchButton() }
-        binding.mediaLibraryButton.setOnClickListener { viewModel.mediaLibraryButton() }
-        binding.settingsButton.setOnClickListener { viewModel.settingsButton() }
+        binding.searchButton.setOnClickListener {
+            viewModel.searchButton(this)
+        }
+
+        binding.mediaLibraryButton.setOnClickListener {
+            viewModel.mediaLibraryButton(this)
+        }
+
+        binding.settingsButton.setOnClickListener {
+            viewModel.settingsButton(this)
+        }
     }
 }
 

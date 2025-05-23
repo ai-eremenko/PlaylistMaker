@@ -31,11 +31,12 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.shareAppButton.setOnClickListener {
-            viewModel.shareApp(getString(R.string.share_app_message))
+            viewModel.shareApp(this, getString(R.string.share_app_message))
         }
 
         binding.writeToSupportButton.setOnClickListener {
             viewModel.openSupport(
+                this,
                 EmailData(
                     email = getString(R.string.mail),
                     subject = getString(R.string.support_email_subject),
@@ -45,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.userAgreementButton.setOnClickListener {
-            viewModel.openTerms(getString(R.string.user_agreement_url))
+            viewModel.openTerms(this, getString(R.string.user_agreement_url))
         }
     }
 

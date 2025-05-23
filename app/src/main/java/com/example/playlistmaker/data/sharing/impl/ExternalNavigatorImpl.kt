@@ -7,11 +7,9 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.domain.sharing.ExternalNavigator
 import com.example.playlistmaker.domain.sharing.model.EmailData
 
-class ExternalNavigatorImpl (
-    private val context: Context
-) : ExternalNavigator {
+class ExternalNavigatorImpl () : ExternalNavigator {
 
-    override fun shareLink(link: String) {
+    override fun shareLink(context: Context, link: String) {
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, link)
@@ -20,12 +18,12 @@ class ExternalNavigatorImpl (
         context.startActivity(Intent.createChooser(intent, context.getString(R.string.share_app_via)))
     }
 
-    override fun openLink(url: String) {
+    override fun openLink(context: Context, url: String) {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         context.startActivity(intent)
     }
 
-    override fun openEmail(emailData: EmailData) {
+    override fun openEmail(context: Context, emailData: EmailData) {
         runCatching {
             val intent = Intent(Intent.ACTION_SENDTO).apply {
                 data = Uri.parse("mailto:")
