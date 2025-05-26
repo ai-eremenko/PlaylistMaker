@@ -1,5 +1,6 @@
 package com.example.playlistmaker.di
 
+import android.media.MediaPlayer
 import com.example.playlistmaker.data.network.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.data.player.impl.AudioPlayerRepositoryImpl
 import com.example.playlistmaker.data.search.SearchRepositoryImpl
@@ -27,7 +28,11 @@ val repositoryModule = module {
         SettingsRepositoryImpl(get())
     }
 
+    single<MediaPlayer> {
+        MediaPlayer()
+    }
+
     single<AudioPlayerRepository> {
-        AudioPlayerRepositoryImpl()
+        AudioPlayerRepositoryImpl(get())
     }
 }

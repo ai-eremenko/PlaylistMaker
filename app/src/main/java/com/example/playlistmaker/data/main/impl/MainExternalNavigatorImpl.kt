@@ -7,20 +7,28 @@ import com.example.playlistmaker.ui.media_library.MediaLibraryActivity
 import com.example.playlistmaker.ui.search.activity.SearchActivity
 import com.example.playlistmaker.ui.settings.activity.SettingsActivity
 
-class MainExternalNavigatorImpl  () : MainExternalNavigator {
+class MainExternalNavigatorImpl  (
+    private val context: Context
+) : MainExternalNavigator {
 
-    override fun openSearch(context: Context) {
-        val searchIntent = Intent(context, SearchActivity::class.java)
+    override fun openSearch() {
+        val searchIntent = Intent(context, SearchActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(searchIntent)
     }
 
-    override fun openMediaLibrary(context: Context) {
-        val mediaLibraryIntent = Intent(context, MediaLibraryActivity::class.java)
+    override fun openMediaLibrary() {
+        val mediaLibraryIntent = Intent(context, MediaLibraryActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(mediaLibraryIntent)
     }
 
-    override fun openSettings(context: Context) {
-        val settingsIntent = Intent(context, SettingsActivity::class.java)
+    override fun openSettings() {
+        val settingsIntent = Intent(context, SettingsActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(settingsIntent)
     }
 }

@@ -22,15 +22,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupViews() {
         binding.searchButton.setOnClickListener {
-            viewModel.searchButton(this)
+            viewModel.searchButton()
         }
 
         binding.mediaLibraryButton.setOnClickListener {
-            viewModel.mediaLibraryButton(this)
+            viewModel.mediaLibraryButton()
         }
 
         binding.settingsButton.setOnClickListener {
-            viewModel.settingsButton(this)
+            viewModel.settingsButton()
         }
     }
 }

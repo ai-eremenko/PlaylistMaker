@@ -1,6 +1,5 @@
 package com.example.playlistmaker.ui.settings.view_model
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,15 +26,15 @@ class SettingsViewModel(
         _themeLiveData.value = newSettings
     }
 
-    fun shareApp(context: Context, shareMessage: String) {
-        sharingInteractor.shareApp(context, shareMessage)
+    fun shareApp(shareMessage: String) {
+        sharingInteractor.shareApp(shareMessage)
     }
 
-    fun openTerms(context: Context, termsUrl: String) {
-        sharingInteractor.openTerms(context, termsUrl)
+    fun openTerms(termsUrl: String) {
+        sharingInteractor.openTerms(termsUrl)
     }
 
-    fun openSupport(context: Context, emailData: EmailData) {
-        sharingInteractor.openSupport(context, emailData)
+    fun openSupport(emailData: EmailData) {
+        sharingInteractor.openSupport(emailData)
     }
 }

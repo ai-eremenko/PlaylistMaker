@@ -55,11 +55,11 @@ val dataModule = module {
 
 
     single<MainExternalNavigator> {
-        MainExternalNavigatorImpl()
+        MainExternalNavigatorImpl(androidContext())
     }
 
     single<ExternalNavigator> {
-        ExternalNavigatorImpl()
+        ExternalNavigatorImpl(androidContext())
     }
 
     single<SettingsRepository> {

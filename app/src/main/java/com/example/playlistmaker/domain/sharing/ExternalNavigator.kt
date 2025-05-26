@@ -1,10 +1,9 @@
 package com.example.playlistmaker.domain.sharing
 
-import android.content.Context
 import com.example.playlistmaker.domain.sharing.model.EmailData
 
 interface ExternalNavigator {
-    fun shareLink(context: Context, link: String)
-    fun openLink(context: Context, url: String)
-    fun openEmail(context: Context, emailData: EmailData)
+    fun shareLink(link: String)
+    fun openLink(url: String)
+    fun openEmail(emailData: EmailData)
 }
