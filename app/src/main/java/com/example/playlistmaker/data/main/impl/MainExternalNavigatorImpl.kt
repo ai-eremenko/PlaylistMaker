@@ -12,17 +12,23 @@ class MainExternalNavigatorImpl  (
 ) : MainExternalNavigator {
 
     override fun openSearch() {
-        val searchIntent = Intent(context, SearchActivity::class.java)
+        val searchIntent = Intent(context, SearchActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(searchIntent)
     }
 
     override fun openMediaLibrary() {
-        val mediaLibraryIntent = Intent(context, MediaLibraryActivity::class.java)
+        val mediaLibraryIntent = Intent(context, MediaLibraryActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(mediaLibraryIntent)
     }
 
     override fun openSettings() {
-        val settingsIntent = Intent(context, SettingsActivity::class.java)
+        val settingsIntent = Intent(context, SettingsActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         context.startActivity(settingsIntent)
     }
 }

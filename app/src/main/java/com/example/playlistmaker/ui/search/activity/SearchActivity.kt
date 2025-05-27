@@ -11,7 +11,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.ui.audio_player.activity.AudioPlayerActivity
 import com.example.playlistmaker.app.Constants
@@ -22,6 +21,7 @@ import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.ui.search.adapter.TrackAdapter
 import com.example.playlistmaker.ui.search.screen_state.SearchScreenState
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
@@ -29,7 +29,7 @@ class SearchActivity : AppCompatActivity() {
         private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 
-    private lateinit var viewModel: SearchViewModel
+    private val viewModel by viewModel<SearchViewModel>()
 
     private lateinit var binding: ActivitySearchBinding
     private lateinit var adapter: TrackAdapter
@@ -43,11 +43,6 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel = ViewModelProvider(
-            this,
-            SearchViewModel.getViewModelFactory(application)
-        )[SearchViewModel::class.java]
 
         setupAdapters()
         setupSearchView()
@@ -212,7 +207,7 @@ class SearchActivity : AppCompatActivity() {
         val audioPlayerActivity = Intent(this, AudioPlayerActivity::class.java)
         audioPlayerActivity.putExtra("trackName", track.trackName)
         audioPlayerActivity.putExtra("artistName", track.artistName)
-        audioPlayerActivity.putExtra("trackDuration", track.trackTimeMillis)
+        audioPlayerActivity.putExtra("trackDuration", track.trackTime)
         audioPlayerActivity.putExtra("artworkUrl", track.artworkUrl100)
         audioPlayerActivity.putExtra("collectionName", track.collectionName)
         audioPlayerActivity.putExtra("releaseDate", track.releaseDate)

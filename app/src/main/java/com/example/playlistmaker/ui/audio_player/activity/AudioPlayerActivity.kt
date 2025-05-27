@@ -3,7 +3,6 @@ package com.example.playlistmaker.ui.audio_player.activity
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.playlistmaker.R
@@ -12,12 +11,13 @@ import com.example.playlistmaker.databinding.ActivityAudioPlayerBinding
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.ui.audio_player.screen_state.AudioPlayerScreenState
 import com.example.playlistmaker.ui.audio_player.view_model.AudioPlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class AudioPlayerActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAudioPlayerBinding
-    private lateinit var viewModel: AudioPlayerViewModel
+    private val viewModel by viewModel<AudioPlayerViewModel>()
 
     @SuppressLint("WrongViewCast", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,16 +25,11 @@ class AudioPlayerActivity : AppCompatActivity() {
         binding = ActivityAudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(
-            this,
-            AudioPlayerViewModel.getViewModelFactory(application)
-        )[AudioPlayerViewModel::class.java]
-
         val track = Track(
             trackId =  intent.getStringExtra("trackId") ?: "Unknown Id",
             trackName = intent.getStringExtra("trackName") ?: "Unknown Track",
             artistName = intent.getStringExtra("artistName") ?: "Unknown Artist",
-            trackTimeMillis = intent.getStringExtra("trackDuration") ?: "",
+            trackTime = intent.getStringExtra("trackDuration") ?: "",
             artworkUrl100 = intent.getStringExtra("artworkUrl") ?: "",
             collectionName = intent.getStringExtra("collectionName") ?: "Unknown Album",
             releaseDate = intent.getStringExtra("releaseDate") ?: "Unknown Year",
@@ -74,7 +69,7 @@ class AudioPlayerActivity : AppCompatActivity() {
     private fun updateUI(data : Track) {
         binding.trackName.text = data.trackName
         binding.artistName.text = data.artistName
-        binding.duration.text = data.getFormattedDuration()
+        binding.duration.text = data.trackTime
         binding.collectionName.text = data.collectionName
         binding.releaseDate.text = data.getReleaseYear()
         binding.primaryGenreName.text =  data.primaryGenreName
@@ -115,7 +110,7 @@ override fun onSaveInstanceState(outState: Bundle) {
         outState.putString("trackId", data.trackId)
         outState.putString("trackName", data.trackName)
         outState.putString("artistName", data.artistName)
-        outState.putString("trackDuration", data.trackTimeMillis)
+        outState.putString("trackDuration", data.trackTime)
         outState.putString("artworkUrl", data.artworkUrl100)
         outState.putString("collectionName", data.collectionName)
         outState.putString("releaseDate", data.releaseDate)
@@ -131,7 +126,7 @@ override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         trackId = savedInstanceState.getString("trackId") ?: "Unknown Id",
         trackName = savedInstanceState.getString("trackName") ?: "Unknown Track",
         artistName = savedInstanceState.getString("artistName") ?: "Unknown Artist",
-        trackTimeMillis = savedInstanceState.getString("trackDuration") ?: "",
+        trackTime = savedInstanceState.getString("trackDuration") ?: "",
         artworkUrl100 = savedInstanceState.getString("artworkUrl") ?: "",
         collectionName = savedInstanceState.getString("collectionName") ?: "Unknown Album",
         releaseDate = savedInstanceState.getString("releaseDate") ?: "Unknown Year",
