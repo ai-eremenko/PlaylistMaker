@@ -119,4 +119,14 @@
         <item name="android:src">@drawable/pressed_play_button_night</item>
     </style>
 
+    <style name="TabIndicator">
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="android:background">@color/black_for_settings</item>
+        <item name="tabTextColor">@color/white</item>
+    </style>
+
+    <style name="FragmentBg">
+        <item name="android:background">@color/black_for_settings</item>
+    </style>
+
 </resources>

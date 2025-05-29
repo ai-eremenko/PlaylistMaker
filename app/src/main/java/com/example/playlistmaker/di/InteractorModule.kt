@@ -4,6 +4,7 @@ import com.example.playlistmaker.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.impl.SearchHistoryInteractorImpl
 import com.example.playlistmaker.domain.main.MainInteractor
 import com.example.playlistmaker.domain.main.impl.MainInteractorImpl
+import com.example.playlistmaker.domain.media_library.MediaLibraryInteractor
 import com.example.playlistmaker.domain.player.AudioPlayerInteractor
 import com.example.playlistmaker.domain.search.SearchInteractor
 import com.example.playlistmaker.domain.search.impl.SearchInteractorImpl
@@ -49,5 +50,9 @@ val interactorModule = module {
         SharingInteractorImpl(
             externalNavigator = get()
         )
+    }
+
+    single<MediaLibraryInteractor> {
+        MediaLibraryInteractor(get())
     }
 }
