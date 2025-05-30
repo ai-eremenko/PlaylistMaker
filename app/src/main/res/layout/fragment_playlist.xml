@@ -8,21 +8,19 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/createPlaylistButton"
         style="@style/UpdateButton"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="113dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="114dp"
         android:layout_weight="0"
         android:fontFamily="@font/ys_display_medium"
+        android:maxLines="1"
         android:text="@string/new_playlist"
         android:textAllCaps="false"
         android:textFontWeight="500"
         android:textSize="@dimen/text_size1"
         app:cornerRadius="54dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
