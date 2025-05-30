@@ -3,7 +3,7 @@ package com.example.playlistmaker.data.main.impl
 import android.content.Context
 import android.content.Intent
 import com.example.playlistmaker.domain.main.MainExternalNavigator
-import com.example.playlistmaker.ui.media_library.MediaLibraryActivity
+import com.example.playlistmaker.ui.media_library.activity.MediaLibraryActivity
 import com.example.playlistmaker.ui.search.activity.SearchActivity
 import com.example.playlistmaker.ui.settings.activity.SettingsActivity
 
