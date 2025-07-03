@@ -1,5 +1,7 @@
 package com.example.playlistmaker.data.search
 
+import android.content.Context
+import com.example.playlistmaker.R
 import com.example.playlistmaker.app.Resource
 import com.example.playlistmaker.app.TrackMapper
 import com.example.playlistmaker.data.NetworkClient
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.flow
 
 class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val trackMapper: TrackMapper
+    private val trackMapper: TrackMapper,
+    private val context: Context
 ) : SearchRepository {
 
     override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
@@ -21,7 +24,7 @@ class SearchRepositoryImpl(
 
                 when(response.resultCode){
                     -1 -> {
-                        emit(Resource.Error("Проверьте подключение к интернету"))
+                        emit(Resource.Error(context.getString(R.string.error_network_connection)))
                     }
                     200 -> {
                         val tracksList = (response as SearchResponse).results.map { trackDto ->
@@ -30,11 +33,12 @@ class SearchRepositoryImpl(
                         emit(Resource.Success(tracksList))
                     }
                     else -> {
-                        emit(Resource.Error("Ошибка сервера (код ${response.resultCode})"))
+                        val errorMsg = context.getString(R.string.error_server, response.resultCode)
+                        emit(Resource.Error(errorMsg))
                     }
                 }
             } catch (e: Exception) {
-                emit(Resource.Error(e.message ?: "Неизвестная ошибка"))
+                emit(Resource.Error(context.getString(R.string.error_unknown)))
             }
     }
 }
