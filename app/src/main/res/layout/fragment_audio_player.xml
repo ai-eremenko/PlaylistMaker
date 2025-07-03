@@ -145,8 +145,8 @@
 
                     <ImageView
                         style="@style/PlayButton"
-                        android:layout_width="@dimen/size9"
-                        android:layout_height="@dimen/size9"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:background="@drawable/round_button" />
 
                 </FrameLayout>
@@ -164,8 +164,8 @@
                     <ImageView
                         android:id="@+id/imageView2"
                         style="@style/PressedPlayButton"
-                        android:layout_width="@dimen/size9"
-                        android:layout_height="@dimen/size9"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:background="@drawable/round_button"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:layout_editor_absoluteX="0dp" />

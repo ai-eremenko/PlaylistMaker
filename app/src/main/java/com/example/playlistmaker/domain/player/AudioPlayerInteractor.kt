@@ -19,4 +19,7 @@ class AudioPlayerInteractor(
     fun setOnCompletionListener(listener: () -> Unit) {
         repository.setOnCompletionListener(listener)
     }
+
+    fun seekTo(position: Int) = repository.seekTo(position)
+    fun getDuration(): Int = repository.getDuration()
 }

@@ -141,6 +141,7 @@ private fun updatePlayerState(state: AudioPlayerScreenState) {
         is  AudioPlayerScreenState.Paused -> {
             binding.playButton.isGone = false
             binding.pauseButton.isGone = true
+            binding.time.text = state.currentPosition
         }
         is  AudioPlayerScreenState.Prepared -> {
             binding.playButton.isGone = false

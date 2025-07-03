@@ -7,23 +7,34 @@ import com.example.playlistmaker.data.dto.SearchRequest
 import com.example.playlistmaker.data.dto.SearchResponse
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.search.SearchRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
     private val trackMapper: TrackMapper
 ) : SearchRepository {
 
-    override fun searchTracks(expression: String): Resource<List<Track>> {
-        return try {
-            val response = networkClient.doRequest(SearchRequest(expression))
+    override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
+            try {
+                val response = networkClient.doRequest(SearchRequest(expression))
 
-            val tracksList = (response as? SearchResponse)?.results?.map { trackDto ->
-                trackMapper.map(trackDto)
-            }.orEmpty()
-
-            Resource.Success(tracksList)
-        } catch (e: Exception) {
-            Resource.Error(e.message ?: "Unknown error")
-        }
+                when(response.resultCode){
+                    -1 -> {
+                        emit(Resource.Error("Проверьте подключение к интернету"))
+                    }
+                    200 -> {
+                        val tracksList = (response as SearchResponse).results.map { trackDto ->
+                            trackMapper.map(trackDto)
+                        }
+                        emit(Resource.Success(tracksList))
+                    }
+                    else -> {
+                        emit(Resource.Error("Ошибка сервера (код ${response.resultCode})"))
+                    }
+                }
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Неизвестная ошибка"))
+            }
     }
 }
