@@ -116,7 +116,7 @@ class AudioPlayerFragment : Fragment() {
     private fun updateUI(data : Track) {
         binding.trackName.text = data.trackName
         binding.artistName.text = data.artistName
-        binding.duration.text = data.trackTime
+        binding.trackTime.text = data.trackTime
         binding.collectionName.text = data.collectionName
         binding.releaseDate.text = data.getReleaseYear()
         binding.primaryGenreName.text =  data.primaryGenreName
@@ -141,6 +141,7 @@ private fun updatePlayerState(state: AudioPlayerScreenState) {
         is  AudioPlayerScreenState.Paused -> {
             binding.playButton.isGone = false
             binding.pauseButton.isGone = true
+            binding.time.text = state.currentPosition
         }
         is  AudioPlayerScreenState.Prepared -> {
             binding.playButton.isGone = false

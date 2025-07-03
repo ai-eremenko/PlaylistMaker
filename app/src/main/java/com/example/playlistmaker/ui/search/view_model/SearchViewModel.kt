@@ -7,12 +7,16 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.R
 import com.example.playlistmaker.app.SingleLiveEvent
 import com.example.playlistmaker.domain.api.SearchHistoryInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.search.SearchInteractor
 import com.example.playlistmaker.ui.search.screen_state.SearchScreenState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Suppress("UNCHECKED_CAST")
 class SearchViewModel(
@@ -21,11 +25,11 @@ class SearchViewModel(
     private val historyInteractor: SearchHistoryInteractor
 ) : AndroidViewModel(application) {
 
-    private val handler = Handler(Looper.getMainLooper())
     private val stateLiveData = MutableLiveData<SearchScreenState>()
     private val showToastLiveData = SingleLiveEvent<String>()
 
     private var latestSearchText: String? = null
+    private var searchJob: Job? = null
 
     fun observeState(): LiveData<SearchScreenState> = stateLiveData
     fun observeShowToast(): LiveData<String> = showToastLiveData
@@ -34,14 +38,12 @@ class SearchViewModel(
         if (latestSearchText == changedText) return
 
         latestSearchText = changedText
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
 
-        val searchRunnable = Runnable { searchRequest(changedText) }
-        handler.postAtTime(
-            searchRunnable,
-            SEARCH_REQUEST_TOKEN,
-            SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        )
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequest(changedText)
+        }
     }
 
     private fun searchRequest(query: String) {
@@ -52,24 +54,27 @@ class SearchViewModel(
 
         renderState(SearchScreenState.Loading)
 
-        interactor.searchTracks(query, object : SearchInteractor.TracksConsumer {
-            override fun consume(foundTracks: List<Track>?, errorMessage: String?) {
-                when {
-                    errorMessage != null -> {
-                        renderState(SearchScreenState.Error(getApplication<Application>().getString(
-                            R.string.no_internet_message)))
-                        showToast(errorMessage)
-                    }
-                    foundTracks.isNullOrEmpty() -> {
-                        renderState(SearchScreenState.Empty(getApplication<Application>().getString(
-                            R.string.no_result_message)))
-                    }
-                    else -> {
-                        renderState(SearchScreenState.Content(foundTracks))
-                    }
-                }
+        viewModelScope.launch {
+            interactor.searchTracks(query).collect { (tracks, error) ->
+                processResult(tracks, error)
             }
-        })
+        }
+    }
+
+    private fun processResult(tracks: List<Track>?, error: String?) {
+        when {
+            error != null -> {
+                renderState(SearchScreenState.Error(getApplication<Application>().getString(
+                    R.string.no_internet_message)))
+            }
+            tracks.isNullOrEmpty() -> {
+                renderState(SearchScreenState.Empty(getApplication<Application>().getString(
+                    R.string.no_result_message)))
+            }
+            else -> {
+                renderState(SearchScreenState.Content(tracks = tracks))
+            }
+        }
     }
 
     fun loadSearchHistory() {
@@ -92,10 +97,6 @@ class SearchViewModel(
 
     private fun showToast(message: String) {
         showToastLiveData.postValue(message)
-    }
-
-    override fun onCleared() {
-        handler.removeCallbacksAndMessages(SEARCH_REQUEST_TOKEN)
     }
 
     companion object {
