@@ -14,7 +14,9 @@ val viewModelModule = module {
 
     viewModel {
         AudioPlayerViewModel(
-            audioPlayerInteractor = get()
+            audioPlayerInteractor = get(),
+            favouriteTrackInteractor = get(),
+            searchInteractor = get()
         )
     }
 
@@ -38,7 +40,7 @@ val viewModelModule = module {
         MediaLibraryViewModel(get())
     }
 
-    viewModel { FavouriteViewModel() }
+    viewModel { FavouriteViewModel(get()) }
 
     viewModel { PlaylistViewModel() }
 

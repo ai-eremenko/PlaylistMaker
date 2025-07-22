@@ -86,6 +86,7 @@ class AudioPlayerFragment : Fragment() {
         viewModel.setTrackData(track)
         setupViews()
         setupObservers()
+        setupFavoriteButton()
     }
 
     private fun setupViews() {
@@ -110,6 +111,22 @@ class AudioPlayerFragment : Fragment() {
 
         viewModel.audioPlayerScreenState.observe(viewLifecycleOwner) { state ->
             updatePlayerState(state)
+        }
+    }
+
+    private fun setupFavoriteButton() {
+        binding.favoriteButtonConstraintLayout.setOnClickListener {
+            viewModel.onFavouriteClicked()
+        }
+
+        viewModel.isFavourite.observe(viewLifecycleOwner) { isFavourite ->
+            if (isFavourite==true) {
+                binding.favoriteButton.visibility = View.GONE
+                binding.pressedFavoriteButton.visibility = View.VISIBLE
+            } else {
+                binding.favoriteButton.visibility = View.VISIBLE
+                binding.pressedFavoriteButton.visibility = View.GONE
+            }
         }
     }
 
@@ -177,4 +194,5 @@ override fun onSaveInstanceState(outState: Bundle) {
         super.onDestroyView()
         _binding = null
     }
+
 }

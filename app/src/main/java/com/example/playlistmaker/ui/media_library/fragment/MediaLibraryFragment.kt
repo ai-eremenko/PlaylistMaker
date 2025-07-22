@@ -6,12 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentMediaLibraryBinding
-import com.example.playlistmaker.ui.favourite.fragment.FavouriteFragment
-import com.example.playlistmaker.ui.favourite.fragment.FavouriteFragment.Companion
+import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.audio_player.fragment.AudioPlayerFragment
 import com.example.playlistmaker.ui.media_library.adapter.MediaLibraryPagerAdapter
 import com.example.playlistmaker.ui.media_library.view_model.MediaLibraryViewModel
-import com.example.playlistmaker.ui.playlist.fragment.PlaylistFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -58,5 +59,12 @@ class MediaLibraryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         tabsMediator?.detach()
+    }
+
+    fun navigateToPlayer(track: Track) {
+        findNavController().navigate(
+            R.id.action_global_audioPlayerFragment,
+            AudioPlayerFragment.createArgs(track)
+        )
     }
 }

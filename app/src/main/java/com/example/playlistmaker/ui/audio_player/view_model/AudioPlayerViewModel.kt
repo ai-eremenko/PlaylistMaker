@@ -1,7 +1,5 @@
 package com.example.playlistmaker.ui.audio_player.view_model
 
-import android.app.Application
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,17 +7,20 @@ import com.example.playlistmaker.ui.audio_player.screen_state.AudioPlayerScreenS
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.os.Handler
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.domain.db.FavouriteTrackInteractor
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.AudioPlayerInteractor
+import com.example.playlistmaker.domain.search.SearchInteractor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 class AudioPlayerViewModel(
-    private val audioPlayerInteractor: AudioPlayerInteractor
+    private val audioPlayerInteractor: AudioPlayerInteractor,
+    private val favouriteTrackInteractor: FavouriteTrackInteractor,
+    private val searchInteractor: SearchInteractor
 ) : ViewModel() {
 
     private val _audioPlayerScreenState =
@@ -34,6 +35,11 @@ class AudioPlayerViewModel(
 
     private var timerJob: Job? = null
 
+    private val _isFavourite = MutableLiveData<Boolean>()
+    val isFavourite: LiveData<Boolean> = _isFavourite
+
+    private var currentTrack: Track? = null
+
 
     init {
         audioPlayerInteractor.setOnPreparedListener {
@@ -44,11 +50,18 @@ class AudioPlayerViewModel(
             audioPlayerInteractor.seekTo(0)
             _audioPlayerScreenState.postValue(AudioPlayerScreenState.Prepared)
         }
+
+
     }
 
     fun setTrackData(data: Track) {
         _trackData.value = data
         audioPlayerInteractor.preparePlayer(data.previewUrl)
+
+        viewModelScope.launch {
+            val favoriteIds = searchInteractor.getFavouriteIds()
+            _isFavourite.postValue(favoriteIds.contains(data.trackId))
+        }
     }
 
     fun playbackControl() {
@@ -109,6 +122,20 @@ class AudioPlayerViewModel(
         super.onCleared()
         audioPlayerInteractor.releasePlayer()
         stopUpdatingTime()
+    }
+
+    fun onFavouriteClicked() {
+        _trackData.value?.let { track ->
+            viewModelScope.launch {
+                val currentIsFavourite = _isFavourite.value ?: false
+                if (currentIsFavourite) {
+                    favouriteTrackInteractor.removeFromFavourite(track)
+                } else {
+                    favouriteTrackInteractor.toggleFavourite(track)
+                }
+                _isFavourite.postValue(!currentIsFavourite)
+            }
+        }
     }
 
     companion object {
