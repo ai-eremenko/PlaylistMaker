@@ -78,8 +78,10 @@ class SearchViewModel(
     }
 
     fun loadSearchHistory() {
-        val history = interactor.getSearchHistory()
-        renderState(SearchScreenState.History(history))
+        viewModelScope.launch {
+            val history = interactor.getSearchHistory()
+            renderState(SearchScreenState.History(history))
+        }
     }
 
     fun addToHistory(track: Track) {
