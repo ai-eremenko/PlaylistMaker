@@ -141,5 +141,9 @@
         <item name="android:icon">@drawable/ic_settings_light</item>
     </style>
 
+    <style name="NewPlaylistStyle">
+        <item name="android:color">@color/white</item>
+    </style>
+
 
 </resources>

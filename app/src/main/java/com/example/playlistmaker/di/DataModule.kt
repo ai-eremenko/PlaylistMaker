@@ -11,10 +11,14 @@ import com.example.playlistmaker.data.local.SearchHistoryStorageImpl
 import com.example.playlistmaker.data.network.ItunesApiService
 import com.example.playlistmaker.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.data.network.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.data.playlist.impl.PlaylistRepositoryImpl
 import com.example.playlistmaker.data.search.SearchRepositoryImpl
 import com.example.playlistmaker.data.settings.impl.SettingsRepositoryImpl
 import com.example.playlistmaker.data.sharing.impl.ExternalNavigatorImpl
 import com.example.playlistmaker.domain.api.SearchHistoryRepository
+import com.example.playlistmaker.domain.db.playlist.PlaylistInteractor
+import com.example.playlistmaker.domain.db.playlist.PlaylistRepository
+import com.example.playlistmaker.domain.impl.PlaylistInteractorImpl
 import com.example.playlistmaker.domain.search.SearchRepository
 import com.example.playlistmaker.domain.settings.SettingsRepository
 import com.example.playlistmaker.domain.sharing.ExternalNavigator
@@ -75,6 +79,14 @@ val dataModule = module {
 
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .fallbackToDestructiveMigration()
             .build()
     }
+
+    single { get<AppDatabase>().playlistDao() }
+    single { get<AppDatabase>().favouriteTrackDao() }
+
+
+    single<PlaylistRepository> { PlaylistRepositoryImpl(get(),get()) }
+    single<PlaylistInteractor> { PlaylistInteractorImpl(get(),get()) }
 }

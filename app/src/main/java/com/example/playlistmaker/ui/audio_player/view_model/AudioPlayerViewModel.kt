@@ -8,10 +8,16 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.domain.db.FavouriteTrackInteractor
+import com.example.playlistmaker.R
+import com.example.playlistmaker.app.extensions.toDomain
+import com.example.playlistmaker.domain.db.favourite_track.FavouriteTrackInteractor
+import com.example.playlistmaker.domain.db.playlist.AddTrackResult
+import com.example.playlistmaker.domain.db.playlist.PlaylistInteractor
+import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
 import com.example.playlistmaker.domain.player.AudioPlayerInteractor
 import com.example.playlistmaker.domain.search.SearchInteractor
+import com.example.playlistmaker.ui.audio_player.AddTrackStatus
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -20,8 +26,12 @@ import kotlinx.coroutines.launch
 class AudioPlayerViewModel(
     private val audioPlayerInteractor: AudioPlayerInteractor,
     private val favouriteTrackInteractor: FavouriteTrackInteractor,
-    private val searchInteractor: SearchInteractor
+    private val searchInteractor: SearchInteractor,
+    private val playlistInteractor: PlaylistInteractor
 ) : ViewModel() {
+
+    private val _addTrackStatus = MutableLiveData<AddTrackStatus>()
+    val addTrackStatus: LiveData<AddTrackStatus> = _addTrackStatus
 
     private val _audioPlayerScreenState =
         MutableLiveData<AudioPlayerScreenState>(AudioPlayerScreenState.Default)
@@ -39,6 +49,9 @@ class AudioPlayerViewModel(
     val isFavourite: LiveData<Boolean> = _isFavourite
 
     private var currentTrack: Track? = null
+
+    private val _playlists = MutableLiveData<List<Playlist>>()
+    val playlists: LiveData<List<Playlist>> = _playlists
 
 
     init {
@@ -134,6 +147,36 @@ class AudioPlayerViewModel(
                     favouriteTrackInteractor.toggleFavourite(track)
                 }
                 _isFavourite.postValue(!currentIsFavourite)
+            }
+        }
+    }
+
+    fun loadPlaylists() {
+        viewModelScope.launch {
+            try {
+                val playlists = playlistInteractor.getAllPlaylists().map {
+                    it.toDomain(playlistInteractor.getPlaylistTrackCount(it))
+                }
+                _playlists.postValue(playlists)
+            } catch (e: Exception) {
+                _addTrackStatus.postValue(AddTrackStatus.Error(R.string.no_playlist.toString()))
+            }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist) {
+        _trackData.value?.let { track ->
+            if (playlist.trackIds.contains(track.trackId)) {
+                _addTrackStatus.value = AddTrackStatus.AlreadyExists
+                return
+            }
+
+            viewModelScope.launch {
+                when (val result = playlistInteractor.addTrackToPlaylist(playlist, track)) {
+                    AddTrackResult.Success -> _addTrackStatus.value = AddTrackStatus.Success
+                    AddTrackResult.AlreadyExists -> _addTrackStatus.value = AddTrackStatus.AlreadyExists
+                    is AddTrackResult.Error -> _addTrackStatus.value = AddTrackStatus.Error(result.message)
+                }
             }
         }
     }

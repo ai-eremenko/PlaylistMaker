@@ -1,4 +1,4 @@
-package com.example.playlistmaker.domain.db
+package com.example.playlistmaker.domain.db.favourite_track
 
 import com.example.playlistmaker.domain.models.Track
 import kotlinx.coroutines.flow.Flow
