@@ -1,7 +1,7 @@
 package com.example.playlistmaker.ui.audio_player
 
 sealed class AddTrackStatus {
-    object Success : AddTrackStatus()
-    object AlreadyExists : AddTrackStatus()
+    class Success (val playlistName: String) : AddTrackStatus()
+    data class AlreadyExists(val playlistName: String) : AddTrackStatus()
     class Error(val message: String) : AddTrackStatus()
 }

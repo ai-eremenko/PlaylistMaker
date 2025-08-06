@@ -130,8 +130,14 @@ class AudioPlayerFragment : Fragment() {
 
         viewModel.addTrackStatus.observe(viewLifecycleOwner) { status ->
             when (status) {
-                is AddTrackStatus.Success -> showToast(getString(R.string.track_in_playlist))
-                is AddTrackStatus.AlreadyExists -> showToast(getString(R.string.track_already_in_playlist))
+                is AddTrackStatus.Success -> {
+                    val message = getString(R.string.track_in_playlist, status.playlistName)
+                        showToast(message)
+                }
+                is AddTrackStatus.AlreadyExists -> {
+                    val message = getString(R.string.track_already_in_playlist, status.playlistName)
+                    showToast(message)
+                }
                 is AddTrackStatus.Error -> showToast(getString(R.string.error, status.message))
             }
         }

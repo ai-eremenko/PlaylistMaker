@@ -1,5 +1,6 @@
 package com.example.playlistmaker.ui.new_playlist.fragment
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
@@ -11,12 +12,16 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.example.playlistmaker.ui.new_playlist.view_model.NewPlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NewPlaylistFragment : Fragment() {
@@ -56,6 +61,7 @@ class NewPlaylistFragment : Fragment() {
         setupTextWatchers()
         setupClickListeners()
         setupBackPressHandler()
+        setupButtonStateObserver()
     }
 
     private fun setupTextWatchers() {
@@ -89,7 +95,7 @@ class NewPlaylistFragment : Fragment() {
                 viewModel.playlistName,
                 viewModel.playlistDescription,
                 onSuccess = {playlistId ->
-                    requireActivity().runOnUiThread {
+                    viewLifecycleOwner.lifecycleScope.launchWhenStarted {
                         showToast(getString(R.string.playlist_created))
                         findNavController().navigateUp()
                     }
@@ -115,6 +121,25 @@ class NewPlaylistFragment : Fragment() {
     private fun setupBackPressHandler() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             checkUnsavedChangesAndNavigate()
+        }
+    }
+
+    private fun setupButtonStateObserver() {
+        lifecycleScope.launch {
+            viewModel.isCreateButtonEnabled.collect { isEnabled ->
+                binding.createNewPlaylistButton.isEnabled = isEnabled
+                binding.createNewPlaylistButton.backgroundTintList = ColorStateList.valueOf(
+                    if (isEnabled) {
+                        ContextCompat.getColor(requireContext(), R.color.switch_thumb_active_color)
+                    } else {
+                        ContextCompat.getColor(requireContext(), R.color.text_color_hint)
+                    }
+                )
+            }
+        }
+
+        binding.nameNewPlaylist.doAfterTextChanged { text ->
+            viewModel.playlistName = text?.toString() ?: ""
         }
     }
 

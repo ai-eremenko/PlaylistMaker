@@ -7,15 +7,24 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.domain.db.playlist.PlaylistInteractor
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
 class NewPlaylistViewModel(private val playlistInteractor: PlaylistInteractor) : ViewModel() {
 
+    private val _isCreateButtonEnabled = MutableStateFlow(false)
+    val isCreateButtonEnabled: StateFlow<Boolean> = _isCreateButtonEnabled
+
     var hasUnsavedChanges = false
     var coverPath: String? = null
     var playlistName: String = ""
+        set(value) {
+            field = value
+            _isCreateButtonEnabled.value = value.isNotEmpty()
+        }
     var playlistDescription: String = ""
 
     fun savePlaylist(

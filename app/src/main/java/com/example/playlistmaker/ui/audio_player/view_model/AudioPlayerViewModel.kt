@@ -167,14 +167,14 @@ class AudioPlayerViewModel(
     fun addTrackToPlaylist(playlist: Playlist) {
         _trackData.value?.let { track ->
             if (playlist.trackIds.contains(track.trackId)) {
-                _addTrackStatus.value = AddTrackStatus.AlreadyExists
+                _addTrackStatus.value = AddTrackStatus.AlreadyExists(playlist.name)
                 return
             }
 
             viewModelScope.launch {
                 when (val result = playlistInteractor.addTrackToPlaylist(playlist, track)) {
-                    AddTrackResult.Success -> _addTrackStatus.value = AddTrackStatus.Success
-                    AddTrackResult.AlreadyExists -> _addTrackStatus.value = AddTrackStatus.AlreadyExists
+                    AddTrackResult.Success -> _addTrackStatus.value = AddTrackStatus.Success(playlist.name)
+                    AddTrackResult.AlreadyExists -> _addTrackStatus.value = AddTrackStatus.AlreadyExists(playlist.name)
                     is AddTrackResult.Error -> _addTrackStatus.value = AddTrackStatus.Error(result.message)
                 }
             }

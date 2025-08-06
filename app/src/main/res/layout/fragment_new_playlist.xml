@@ -140,7 +140,7 @@
         android:layout_marginStart="17dp"
         android:layout_marginEnd="17dp"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/create_playlist"
+        android:backgroundTint="@color/text_color_hint"
         android:text="@string/create"
         android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium"
@@ -150,6 +150,7 @@
         app:cornerRadius="8dp"
         app:elevation="0dp"
         android:stateListAnimator="@null"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
