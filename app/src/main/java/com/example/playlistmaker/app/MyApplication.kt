@@ -17,7 +17,10 @@ class MyApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@MyApplication)
-            modules(dataModule, repositoryModule, interactorModule, viewModelModule)
+            modules(dataModule,
+                repositoryModule,
+                interactorModule,
+                viewModelModule)
         }
         val sharedPreferences = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE)
         darkTheme = sharedPreferences.getBoolean("dark_theme", false)
@@ -34,4 +37,6 @@ class MyApplication : Application() {
             }
         )
     }
+
+
 }
