@@ -240,6 +240,7 @@ override fun onSaveInstanceState(outState: Bundle) {
             onCreateNewClicked = {
                 findNavController().navigate(R.id.action_audioPlayerFragment_to_newPlaylistFragment)
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                showToast(getString(R.string.playlist_created))
             }
         )
 
