@@ -1,4 +1,4 @@
-package com.example.playlistmaker.ui.search.adapter
+package com.example.playlistmaker.ui.playlist_info.adapter
 
 import android.content.Context
 import android.util.TypedValue
@@ -10,15 +10,22 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.TrackViewBinding
 import com.example.playlistmaker.domain.models.Track
 
-class TrackViewHolder(
+class TrackInPlaylistViewHolder(
     private val binding: TrackViewBinding,
     private val onClick: (Track) -> Unit,
+    private val onTrackLongClick: (Track) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(model: Track) {
         binding.root.setOnClickListener {
             onClick(model)
         }
+
+        binding.root.setOnLongClickListener {
+            onTrackLongClick(model)
+            true
+        }
+
         binding.trackName.text = model.trackName
         binding.artistName.text = model.artistName
         binding.trackTime.text = model.trackTime
@@ -37,4 +44,4 @@ class TrackViewHolder(
             dp.toFloat(),
             resources.displayMetrics
         ).toInt()
-    }
+}

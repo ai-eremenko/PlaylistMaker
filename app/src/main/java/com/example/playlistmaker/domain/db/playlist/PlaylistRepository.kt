@@ -1,6 +1,7 @@
 package com.example.playlistmaker.domain.db.playlist
 
 import com.example.playlistmaker.data.db.entity.PlaylistEntity
+import com.example.playlistmaker.data.db.entity.PlaylistTrackEntity
 import com.example.playlistmaker.domain.models.Track
 
 interface PlaylistRepository {
@@ -10,6 +11,12 @@ interface PlaylistRepository {
     suspend fun getPlaylistTracksCount(playlist: PlaylistEntity): Int
     suspend fun getAllPlaylists(): List<PlaylistEntity>
     suspend fun addTrackToPlaylist(playlist: PlaylistEntity, track: Track): AddTrackResult
+    suspend fun getTrackById(trackId: String): PlaylistTrackEntity?
+    suspend fun getTracksByPlaylist(trackIds: List<String>): List<PlaylistTrackEntity>
+    suspend fun getTrackDurations(trackIds: List<String>): List<Long>
+    suspend fun deleteTrackFromPlaylist(playlistId: Long, trackId: String)
+    suspend fun getPlaylistById(id: Long): PlaylistEntity?
+    suspend fun deletePlaylist(playlistId: Long)
 }
 
 sealed class AddTrackResult {

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.data.db.entity.PlaylistEntity
 import com.example.playlistmaker.domain.db.playlist.PlaylistInteractor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +19,12 @@ class NewPlaylistViewModel(private val playlistInteractor: PlaylistInteractor) :
     private val _isCreateButtonEnabled = MutableStateFlow(false)
     val isCreateButtonEnabled: StateFlow<Boolean> = _isCreateButtonEnabled
 
+    private val _editingPlaylistId = MutableStateFlow(0L)
+    val editingPlaylistId: StateFlow<Long> = _editingPlaylistId
+
+    private val _playlistData = MutableStateFlow<PlaylistEntity?>(null)
+    val playlistData: StateFlow<PlaylistEntity?> = _playlistData
+
     var hasUnsavedChanges = false
     var coverPath: String? = null
     var playlistName: String = ""
@@ -26,6 +33,19 @@ class NewPlaylistViewModel(private val playlistInteractor: PlaylistInteractor) :
             _isCreateButtonEnabled.value = value.isNotEmpty()
         }
     var playlistDescription: String = ""
+
+
+    fun initEditingMode(playlistId: Long) {
+        _editingPlaylistId.value = playlistId
+        viewModelScope.launch {
+            playlistInteractor.getPlaylist(playlistId)?.let { playlist ->
+                _playlistData.value = playlist
+                playlistName = playlist.name
+                playlistDescription = playlist.description ?: ""
+                coverPath = playlist.coverPath
+            }
+        }
+    }
 
     fun savePlaylist(
         name: String,
@@ -40,14 +60,27 @@ class NewPlaylistViewModel(private val playlistInteractor: PlaylistInteractor) :
 
         viewModelScope.launch {
             try {
-                val playlistId  = playlistInteractor.createPlaylist(
-                    name = name,
-                    description = description,
-                    coverPath = coverPath
-                )
+                val playlistId = if (_editingPlaylistId.value != 0L) {
+                    val existingPlaylist = playlistInteractor.getPlaylist(_editingPlaylistId.value)
+                    playlistInteractor.updatePlaylist(
+                        PlaylistEntity(
+                            id = editingPlaylistId.value,
+                            name = name,
+                            description = description,
+                            coverPath = coverPath,
+                            trackIds = existingPlaylist?.trackIds ?: ""
+                        )
+                    )
+                    editingPlaylistId.value
+                } else {
+                    playlistInteractor.createPlaylist(
+                        name = name,
+                        description = description,
+                        coverPath = coverPath
+                    )
+                }
                 onSuccess(playlistId)
             } catch (e: Exception) {
-                e.printStackTrace()
                 onError("playlist_save_error")
             }
         }
