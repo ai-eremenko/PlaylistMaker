@@ -110,4 +110,11 @@ class PlaylistFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun openPlaylistInfo(playlistId: Long) {
+        parentFragment?.findNavController()?.navigate(
+            R.id.action_mediaLibraryFragment_to_playlistInfoFragment,
+            bundleOf("playlist_id" to playlistId)
+        )
+    }
 }

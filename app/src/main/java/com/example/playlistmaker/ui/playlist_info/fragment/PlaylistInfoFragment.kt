@@ -17,6 +17,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistInfoBinding
 import com.example.playlistmaker.domain.models.Playlist
 import com.example.playlistmaker.domain.models.Track
+import com.example.playlistmaker.ui.audio_player.fragment.AudioPlayerFragment
+import com.example.playlistmaker.ui.audio_player.fragment.AudioPlayerFragment.Companion
 import com.example.playlistmaker.ui.new_playlist.view_model.NewPlaylistViewModel
 import com.example.playlistmaker.ui.playlist_info.adapter.TrackInPlaylistAdapter
 import com.example.playlistmaker.ui.playlist_info.view_model.PlaylistInfoViewModel
@@ -45,18 +47,60 @@ class PlaylistInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        parentFragmentManager.setFragmentResultListener("playlist_updated", viewLifecycleOwner) { _, bundle ->
+            val playlistId = bundle.getLong("playlist_id")
+            if (playlistId == arguments?.getLong(ARG_PLAYLIST_ID)) {
+                viewModel.loadPlaylist(playlistId)
+            }
+        }
+
         val playlistId = arguments?.getLong(ARG_PLAYLIST_ID) ?: 0L
         viewModel.loadPlaylist(playlistId)
+
+        val bundle = savedInstanceState ?: arguments
+        val track = Track(
+            trackId = bundle?.getString(ARG_TRACK_ID) ?: "Unknown Id",
+            trackName = bundle?.getString(ARG_TRACK_NAME) ?: "Unknown Track",
+            artistName = bundle?.getString(ARG_ARTIST_NAME) ?: "Unknown Artist",
+            trackTime = bundle?.getString(ARG_TRACK_TIME) ?: "",
+            artworkUrl100 = bundle?.getString(ARG_ARTWORK_URL) ?: "",
+            collectionName = bundle?.getString(ARG_COLLECTION_NAME) ?: "Unknown Album",
+            releaseDate = bundle?.getString(ARG_RELEASE_DATE) ?: "Unknown Year",
+            primaryGenreName = bundle?.getString(ARG_GENRE_NAME) ?: "Unknown Genre",
+            country = bundle?.getString(ARG_COUNTRY) ?: "Unknown Country",
+            previewUrl = bundle?.getString(ARG_PREVIEW_URL) ?: ""
+        )
 
         setupObservers()
         setupClickListeners()
         setupAdapter()
-        setupMenuBottomSheet()
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.playlistsInfoBottomSheet)
         bottomSheetBehavior.isHideable = false
         bottomSheetBehavior.peekHeight = resources.getDimensionPixelSize(R.dimen.bottom_sheet_peek_height)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (!isAdded) return
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        binding.overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        binding.overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (!isAdded) return
+                binding.overlay.alpha = slideOffset.coerceAtLeast(0f)
+            }
+        })
+
+        setupMenuBottomSheet()
 
         binding.playlistsRecyclerView.adapter = adapter
         binding.playlistsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -67,9 +111,16 @@ class PlaylistInfoFragment : Fragment() {
         adapter = TrackInPlaylistAdapter(
             emptyList(),
             onTrackClick = { track ->
+                if (track.previewUrl.isBlank()) {
+                    Toast.makeText(requireContext(),
+                        getString(R.string.error),
+                        Toast.LENGTH_SHORT).show()
+                    return@TrackInPlaylistAdapter
+                }
+
                 findNavController().navigate(
-                    R.id.action_playlistInfoFragment_to_audioPlayerFragment,
-                    bundleOf("track" to track)
+                    R.id.action_global_audioPlayerFragment,
+                    AudioPlayerFragment.createArgs(track)
                 )
             },
             onTrackLongClick = { track ->
@@ -94,13 +145,23 @@ class PlaylistInfoFragment : Fragment() {
         viewModel.playlist.observe(viewLifecycleOwner) { playlist ->
             binding.playlistName.text = playlist.name
             binding.yearOfPlaylist.text = playlist.description
-            binding.trackCount.text = playlist.trackCount.toString()
+            binding.trackCount.text = getTrackCountString(playlist.trackCount)
+
+            binding.playlistNameBsh.text = playlist.name
+            binding.playlistTracksCount.text = getTrackCountString(playlist.trackCount)
 
             playlist.coverPath?.let { path ->
                 Glide.with(this)
                     .load(path)
                     .into(binding.placeholderNewPlaylist)
-            }
+
+            Glide.with(this)
+                .load(path)
+                .into(binding.playlistCover)
+        } ?: run {
+            binding.placeholderNewPlaylist.setImageResource(R.drawable.placeholder4)
+            binding.playlistCover.setImageResource(R.drawable.placeholder4)
+        }
 
             viewModel.calculateDuration(playlist.trackIds)
         }
@@ -112,12 +173,38 @@ class PlaylistInfoFragment : Fragment() {
         viewModel.duration.observe(viewLifecycleOwner) { duration ->
             binding.timeDuration.text = duration
         }
+
+        viewModel.refreshTrigger.observe(viewLifecycleOwner) {
+            arguments?.getLong(ARG_PLAYLIST_ID)?.let { playlistId ->
+                viewModel.loadPlaylist(playlistId)
+            }
+        }
+    }
+
+    fun getTrackCountString(count: Int): String {
+        val lastDigit = count % 10
+        val lastTwoDigits = count % 100
+
+        return when {
+            lastTwoDigits in 11..14 -> "$count треков"
+            lastDigit == 1 -> "$count трек"
+            lastDigit in 2..4 -> "$count трека"
+            else -> "$count треков"
+        }
     }
 
     private fun setupClickListeners() {
         binding.backButtonPlayer.setOnClickListener {
             findNavController().navigateUp()
         }
+
+        binding.editInfoButton.setOnClickListener {
+                val playlistId = arguments?.getLong(ARG_PLAYLIST_ID) ?: 0L
+                findNavController().navigate(
+                    R.id.action_playlistInfoFragment_to_newPlaylistFragment,
+                    bundleOf("edit_playlist_id" to playlistId)
+                )
+            }
 
         binding.ShareButton.setOnClickListener {
             viewModel.tracks.value?.let { tracks ->
@@ -157,9 +244,35 @@ class PlaylistInfoFragment : Fragment() {
         menuBottomSheetBehavior.isHideable = true
         menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+        menuBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (!isAdded) return
+                when (newState) {
+                BottomSheetBehavior.STATE_EXPANDED -> {
+                    binding.overlay.visibility = View.VISIBLE
+                }
+                BottomSheetBehavior.STATE_HIDDEN -> {
+                    binding.overlay.visibility = View.GONE
+                }
+                else -> {
+                    binding.overlay.visibility = View.VISIBLE
+                }
+            }
+        }
+
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                if (!isAdded) return
+                binding.overlay.alpha = slideOffset.coerceAtLeast(0f)
+            }
+        })
+
         binding.menuButton.setOnClickListener {
-            println("Menu button clicked")
-            menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            arguments?.getLong(ARG_PLAYLIST_ID)?.let { playlistId ->
+                viewModel.forceRefresh()
+                menuBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
 
         binding.shareButton.setOnClickListener {
@@ -199,13 +312,40 @@ class PlaylistInfoFragment : Fragment() {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
+    override fun onResume() {
+        super.onResume()
+        arguments?.getLong(ARG_PLAYLIST_ID)?.let { playlistId ->
+            viewModel.loadPlaylist(playlistId)
+        }
+    }
+
     companion object {
         private const val ARG_PLAYLIST_ID = "playlist_id"
 
-        fun newInstance(playlistId: Long): PlaylistInfoFragment {
-            return PlaylistInfoFragment().apply {
-                arguments = bundleOf(ARG_PLAYLIST_ID to playlistId)
-            }
+        const val ARG_TRACK_ID = "track_id"
+        const val ARG_TRACK_NAME = "track_name"
+        const val ARG_ARTIST_NAME = "artist_name"
+        const val ARG_TRACK_TIME = "track_time"
+        const val ARG_ARTWORK_URL = "artwork_url"
+        const val ARG_COLLECTION_NAME = "collection_name"
+        const val ARG_RELEASE_DATE = "release_date"
+        const val ARG_GENRE_NAME = "genre_name"
+        const val ARG_COUNTRY = "country"
+        const val ARG_PREVIEW_URL = "preview_url"
+
+        fun createArgs(track: Track): Bundle {
+            return bundleOf(
+               ARG_TRACK_ID to track.trackId,
+                ARG_TRACK_NAME to track.trackName,
+                ARG_ARTIST_NAME to track.artistName,
+                ARG_TRACK_TIME to track.trackTime,
+                ARG_ARTWORK_URL to track.artworkUrl100,
+                ARG_COLLECTION_NAME to track.collectionName,
+                ARG_RELEASE_DATE to track.releaseDate,
+                ARG_GENRE_NAME to track.primaryGenreName,
+                ARG_COUNTRY to track.country,
+                ARG_PREVIEW_URL to track.previewUrl
+            )
         }
     }
 }

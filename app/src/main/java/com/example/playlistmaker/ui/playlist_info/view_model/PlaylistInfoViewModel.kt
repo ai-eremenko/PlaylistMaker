@@ -18,6 +18,10 @@ class PlaylistInfoViewModel(
     private val gson: Gson,
     private val repository: PlaylistRepository
 ) : ViewModel() {
+
+    private val _refreshTrigger = MutableLiveData<Unit>()
+    val refreshTrigger: LiveData<Unit> = _refreshTrigger
+
     private val _playlist = MutableLiveData<Playlist>()
     val playlist: LiveData<Playlist> = _playlist
 
@@ -34,18 +38,19 @@ class PlaylistInfoViewModel(
                 val trackCount = playlistInteractor.getPlaylistTrackCount(it)
                 _playlist.postValue(
                     Playlist(
-                        id = it.id,
-                        name = it.name,
-                        description = it.description,
-                        coverPath = it.coverPath,
+                        id = playlistEntity.id,
+                        name = playlistEntity.name,
+                        description = playlistEntity.description,
+                        coverPath = playlistEntity.coverPath,
                         trackCount = trackCount,
-                        trackIds = it.trackIds
+                        trackIds = playlistEntity.trackIds
                     )
                 )
                 val trackIds = gson.fromJson<List<String>>(it.trackIds, object : TypeToken<List<String>>() {}.type)
                     ?: emptyList()
                 val tracks = playlistInteractor.getTracksByPlaylist(trackIds).map { it.toTrack() }
                 _tracks.postValue(tracks)
+                calculateDuration(it.trackIds)
             }
         }
     }
@@ -78,5 +83,9 @@ class PlaylistInfoViewModel(
         viewModelScope.launch {
             repository.deletePlaylist(playlistId)
         }
+    }
+
+    fun forceRefresh() {
+        _refreshTrigger.postValue(Unit)
     }
 }

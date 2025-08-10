@@ -49,11 +49,17 @@ class PlaylistInteractorImpl(
         repository.getTracksByPlaylist(trackIds)
 
     override suspend fun calculateTotalDuration(trackIds: List<String>): String {
-        if (trackIds.isEmpty()) return "0 мин"
+        if (trackIds.isEmpty()) return "0 минут"
 
         val durations = repository.getTrackDurations(trackIds)
         val totalMillis = durations.sum()
         val totalMinutes = totalMillis / 60000
-        return "$totalMinutes мин"
+
+        return when {
+            totalMinutes % 100 in 11..14 -> "$totalMinutes минут"
+            (totalMinutes % 10).toInt() == 1 -> "$totalMinutes минута"
+            totalMinutes % 10 in 2..4 -> "$totalMinutes минуты"
+            else -> "$totalMinutes минут"
+        }
     }
 }
