@@ -67,4 +67,11 @@ class MediaLibraryFragment : Fragment() {
             AudioPlayerFragment.createArgs(track)
         )
     }
+
+    fun navigateToPlaylistInfo(playlistId: Long) {
+        findNavController().navigate(
+            R.id.action_mediaLibraryFragment_to_playlistInfoFragment,
+            bundleOf("playlist_id" to playlistId)
+        )
+    }
 }

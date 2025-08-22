@@ -4,6 +4,7 @@
     <dimen name="text_size2">13sp</dimen>
     <dimen name="text_size1">14sp</dimen>
     <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size3">18sp</dimen>
     <dimen name="text_size">19sp</dimen>
     <dimen name="text_size_large">22sp</dimen>
 
@@ -31,6 +32,7 @@
     <dimen name="padding_third">102dp</dimen>
     <dimen name="padding_second">120dp</dimen>
     <dimen name="size10">138dp</dimen>
+    <dimen name="bottom_sheet_peek_height">150dp</dimen>
     <dimen name="size14">210dp</dimen>
     <dimen name="size16">312dp</dimen>
     <dimen name="size15">346dp</dimen>

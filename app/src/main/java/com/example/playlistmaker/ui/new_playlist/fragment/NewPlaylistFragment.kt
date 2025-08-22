@@ -13,14 +13,17 @@ import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentNewPlaylistBinding
 import com.example.playlistmaker.ui.new_playlist.view_model.NewPlaylistViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -58,6 +61,30 @@ class NewPlaylistFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val playlistId = arguments?.getLong("edit_playlist_id") ?: 0L
+        if (playlistId != 0L) {
+            viewModel.initEditingMode(playlistId)
+            binding.textView2.text = getString(R.string.edit)
+            binding.createNewPlaylistButton.text = getString(R.string.save)
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.playlistData.collect { playlist ->
+                    playlist?.let {
+                        binding.nameNewPlaylist.setText(it.name)
+                        binding.descriptionNewPlaylist.setText(it.description ?: "")
+
+                        if (!it.coverPath.isNullOrEmpty()) {
+                            Glide.with(requireContext())
+                                .load(it.coverPath)
+                                .into(binding.placeholderNewPlaylist)
+                        } else {
+                            binding.placeholderNewPlaylist.setImageResource(R.drawable.placeholder4)
+                        }
+                    }
+                }
+            }
+        }
+
         setupTextWatchers()
         setupClickListeners()
         setupBackPressHandler()
@@ -84,19 +111,37 @@ class NewPlaylistFragment : Fragment() {
         }
 
         binding.backButtonPlayer.setOnClickListener {
-            checkUnsavedChangesAndNavigate()
+            lifecycleScope.launch {
+                val isEditing = viewModel.editingPlaylistId.value != 0L
+                if (isEditing && !viewModel.hasUnsavedChanges) {
+                    findNavController().navigateUp()
+                } else {
+                    checkUnsavedChangesAndNavigate()
+                }
+            }
         }
+
 
         binding.createNewPlaylistButton.setOnClickListener {
             viewModel.playlistName = binding.nameNewPlaylist.text.toString()
             viewModel.playlistDescription = binding.descriptionNewPlaylist.text.toString()
 
+            val isEditing = viewModel.editingPlaylistId.value != 0L
             viewModel.savePlaylist(
                 viewModel.playlistName,
                 viewModel.playlistDescription,
                 onSuccess = {playlistId ->
                     viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-                        showToast(getString(R.string.playlist_created))
+                        val message = if (isEditing) {
+                            getString(R.string.playlist_edited)
+                        } else {
+                            getString(R.string.playlist_created)
+                        }
+                        showToast(message)
+                        parentFragmentManager.setFragmentResult(
+                            "playlist_updated",
+                            bundleOf("playlist_id" to playlistId)
+                        )
                         findNavController().navigateUp()
                     }
                 },
@@ -170,6 +215,14 @@ class NewPlaylistFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (requireActivity().intent?.getBooleanExtra("playlist_updated", false) == true) {
+            requireActivity().intent.removeExtra("playlist_updated")
+
+        }
     }
 
     companion object {

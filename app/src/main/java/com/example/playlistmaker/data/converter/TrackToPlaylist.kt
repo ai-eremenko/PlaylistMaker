@@ -1,6 +1,5 @@
 package com.example.playlistmaker.data.converter
 
-import androidx.room.PrimaryKey
 import com.example.playlistmaker.data.db.entity.PlaylistTrackEntity
 import com.example.playlistmaker.domain.models.Track
 
